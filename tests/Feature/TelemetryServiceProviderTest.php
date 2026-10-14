@@ -1,0 +1,12 @@
+<?php
+
+use Actengage\Telemetry\TelemetryServiceProvider;
+use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
+
+it('loads the telemetry service provider', function () {
+    expect($this->app->providerIsLoaded(TelemetryServiceProvider::class))->toBeTrue();
+});
+
+it('loads the OpenTelemetry service provider', function () {
+    expect($this->app->providerIsLoaded(LaravelOpenTelemetryServiceProvider::class))->toBeTrue();
+});
