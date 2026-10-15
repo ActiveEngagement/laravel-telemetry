@@ -12,6 +12,7 @@
     "driftingly/rector-laravel": "^2.6",
     "orchestra/testbench": "^10.0|^11.0",
     "pestphp/pest": "^4.0",
+    "phpstan/phpstan": "^2.3",
     "rector/rector": "^2.7"
   },
   "autoload": {
@@ -34,7 +35,8 @@
   "scripts": {
     "refactor": "rector",
     "test": "pest",
-    "test:refactor": "rector --dry-run"
+    "test:refactor": "rector --dry-run",
+    "test:types": "phpstan"
   },
   "config": {
     "sort-packages": true,

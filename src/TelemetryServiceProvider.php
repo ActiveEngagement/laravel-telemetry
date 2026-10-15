@@ -2,6 +2,7 @@
 
 namespace Actengage\Telemetry;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\ServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\Support\OpenTelemetryMonologHandler;
 
@@ -23,7 +24,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
     protected function registerLogChannel(): void
     {
-        $config = $this->app['config'];
+        $config = $this->app->make(Repository::class);
 
         if ($config->has('logging.channels.otlp')) {
             return;
