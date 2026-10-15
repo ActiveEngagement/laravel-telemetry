@@ -4,7 +4,6 @@ namespace Actengage\Telemetry;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\ServiceProvider;
-use Keepsuit\LaravelOpenTelemetry\Support\OpenTelemetryMonologHandler;
 
 class TelemetryServiceProvider extends ServiceProvider
 {
@@ -32,7 +31,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
         $config->set('logging.channels.otlp', [
             'driver' => 'monolog',
-            'handler' => OpenTelemetryMonologHandler::class,
+            'handler' => $config->get('telemetry.log_handler'),
             'level' => $config->get('telemetry.log_level'),
         ]);
     }
