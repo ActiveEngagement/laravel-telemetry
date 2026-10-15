@@ -1,0 +1,42 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - ${{ matrix.stability }}
+    runs-on: ubuntu-24.04
+    continue-on-error: ${{ matrix.php == '8.6' }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['8.4', '8.5', '8.6']
+        laravel: [12, 13]
+        stability: [prefer-lowest, prefer-stable]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress --with="illuminate/support=^${{ matrix.laravel }}" ${{ matrix.php == '8.6' && '--ignore-platform-req=php+' || '' }}
+
+      - name: Execute tests
+        run: composer test
