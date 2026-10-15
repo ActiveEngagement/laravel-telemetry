@@ -1,43 +1,47 @@
 {
-    "name": "actengage/laravel-telemetry",
-    "description": "Shared OpenTelemetry setup for AE Laravel apps",
-    "type": "library",
-    "license": "proprietary",
-    "require": {
-        "php": "^8.4",
-        "illuminate/support": "^12.0|^13.0",
-        "keepsuit/laravel-opentelemetry": "^2.2.4"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^10.0|^11.0",
-        "pestphp/pest": "^4.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Actengage\\Telemetry\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Actengage\\Telemetry\\TelemetryServiceProvider"
-            ]
-        }
-    },
-    "scripts": {
-        "test": "pest"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+  "name": "actengage/laravel-telemetry",
+  "description": "Shared OpenTelemetry setup for AE Laravel apps",
+  "type": "library",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.4",
+    "illuminate/support": "^12.0|^13.0",
+    "keepsuit/laravel-opentelemetry": "^2.2.4"
+  },
+  "require-dev": {
+    "driftingly/rector-laravel": "^2.6",
+    "orchestra/testbench": "^10.0|^11.0",
+    "pestphp/pest": "^4.0",
+    "rector/rector": "^2.7"
+  },
+  "autoload": {
+    "psr-4": {
+      "Actengage\\Telemetry\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Actengage\\Telemetry\\TelemetryServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "refactor": "rector",
+    "test": "pest",
+    "test:refactor": "rector --dry-run"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
