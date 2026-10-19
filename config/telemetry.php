@@ -1,9 +1,13 @@
 <?php
 
-use Actengage\Telemetry\Logging\OpenTelemetryHandler;
+use Actengage\Telemetry\Watchers;
 
 return [
-    'log_level' => env('TELEMETRY_LOG_LEVEL', env('LOG_LEVEL', 'debug')),
+    'enabled' => env('TELEMETRY_ENABLED', true),
 
-    'log_handler' => OpenTelemetryHandler::class,
+    'watchers' => [
+        Watchers\LogWatcher::class => [
+            'level' => env('TELEMETRY_LOG_LEVEL', env('LOG_LEVEL', 'debug')),
+        ],
+    ],
 ];

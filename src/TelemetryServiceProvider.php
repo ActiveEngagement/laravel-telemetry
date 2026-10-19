@@ -2,6 +2,8 @@
 
 namespace Actengage\Telemetry;
 
+use Actengage\Telemetry\Contracts\ContextResolver;
+use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\ServiceProvider;
 
@@ -11,35 +13,28 @@ class TelemetryServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/telemetry.php', 'telemetry');
 
-        $this->registerLogChannel();
+        $this->app->singleton(ContextResolver::class, KeepsuitContextResolver::class);
     }
 
-    public function boot(): void
+    public function boot(Repository $config): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->registerPublishing();
-        }
-    }
+        $this->registerPublishing();
 
-    protected function registerLogChannel(): void
-    {
-        $config = $this->app->make(Repository::class);
-
-        if ($config->has('logging.channels.otlp')) {
+        if (! $config->get('telemetry.enabled')) {
             return;
         }
 
-        $config->set('logging.channels.otlp', [
-            'driver' => 'monolog',
-            'handler' => $config->get('telemetry.log_handler'),
-            'level' => $config->get('telemetry.log_level'),
-        ]);
+        Telemetry::startRecording();
+
+        $this->app->booted(Telemetry::registerWatchers(...));
     }
 
     protected function registerPublishing(): void
     {
-        $this->publishes([
-            __DIR__.'/../config/telemetry.php' => config_path('telemetry.php'),
-        ], ['telemetry', 'telemetry-config']);
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/telemetry.php' => config_path('telemetry.php'),
+            ], ['telemetry', 'telemetry-config']);
+        }
     }
 }
