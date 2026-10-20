@@ -2,6 +2,8 @@
 
 namespace Actengage\Telemetry;
 
+use Actengage\Telemetry\Console\HeartbeatCommand;
+use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
 use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Illuminate\Contracts\Config\Repository;
@@ -18,6 +20,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
     public function boot(Repository $config): void
     {
+        $this->registerCommands();
         $this->registerPublishing();
 
         if (! $config->get('telemetry.enabled')) {
@@ -27,6 +30,16 @@ class TelemetryServiceProvider extends ServiceProvider
         Telemetry::startRecording();
 
         $this->app->booted(Telemetry::registerWatchers(...));
+    }
+
+    protected function registerCommands(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                HeartbeatCommand::class,
+                ...Telemetry::isHorizonInstalled() ? [HorizonHeartbeatCommand::class] : [],
+            ]);
+        }
     }
 
     protected function registerPublishing(): void

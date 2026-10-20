@@ -5,12 +5,18 @@
   "license": "proprietary",
   "require": {
     "php": "^8.4",
+    "illuminate/auth": "^12.0|^13.0",
+    "illuminate/bus": "^12.0|^13.0",
+    "illuminate/console": "^12.0|^13.0",
+    "illuminate/contracts": "^12.0|^13.0",
+    "illuminate/log": "^12.0|^13.0",
     "illuminate/support": "^12.0|^13.0",
     "keepsuit/laravel-opentelemetry": "^2.2.4",
     "open-telemetry/api": "^1.8"
   },
   "require-dev": {
     "driftingly/rector-laravel": "^2.6",
+    "laravel/horizon": "^5.50",
     "orchestra/testbench": "^10.0|^11.0",
     "pestphp/pest": "^4.0",
     "phpstan/phpstan": "^2.3",
@@ -46,5 +52,8 @@
     }
   },
   "minimum-stability": "stable",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "suggest": {
+    "laravel/horizon": "Required for the horizon queue heartbeat (^5.50)."
+  }
 }

@@ -2,6 +2,8 @@
 
 namespace Actengage\Telemetry;
 
+use Laravel\Horizon\Contracts\MasterSupervisorRepository;
+
 class Telemetry
 {
     use RegistersWatchers;
@@ -21,6 +23,11 @@ class Telemetry
     public static function isRecording(): bool
     {
         return static::$shouldRecord;
+    }
+
+    public static function isHorizonInstalled(): bool
+    {
+        return interface_exists(MasterSupervisorRepository::class);
     }
 
     /**

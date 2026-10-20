@@ -2,6 +2,8 @@
 
 use Rector\Config\RectorConfig;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
+use RectorLaravel\Rector\Class_\DescriptionPropertyToDescriptionAttributeRector;
+use RectorLaravel\Rector\Class_\SignaturePropertyToSignatureAttributeRector;
 use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
@@ -12,6 +14,8 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         SafeDeclareStrictTypesRector::class,
+        DescriptionPropertyToDescriptionAttributeRector::class,
+        SignaturePropertyToSignatureAttributeRector::class,
     ])
     ->withPreparedSets(
         deadCode: true,
