@@ -6,8 +6,10 @@ use Actengage\Telemetry\Console\HeartbeatCommand;
 use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
 use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
+use Actengage\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\ServiceProvider;
+use OpenTelemetry\API\Common\Time\Clock;
 
 class TelemetryServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
     public function boot(Repository $config): void
     {
+        $this->registerClock();
         $this->registerCommands();
         $this->registerPublishing();
 
@@ -30,6 +33,11 @@ class TelemetryServiceProvider extends ServiceProvider
         Telemetry::startRecording();
 
         $this->app->booted(Telemetry::registerWatchers(...));
+    }
+
+    protected function registerClock(): void
+    {
+        $this->app->booted(fn () => Clock::setDefault(new WallClock));
     }
 
     protected function registerCommands(): void
