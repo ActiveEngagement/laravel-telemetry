@@ -5,12 +5,12 @@
   "license": "proprietary",
   "require": {
     "php": "^8.4",
-    "illuminate/auth": "^12.0|^13.0",
-    "illuminate/bus": "^12.0|^13.0",
-    "illuminate/console": "^12.0|^13.0",
-    "illuminate/contracts": "^12.0|^13.0",
-    "illuminate/log": "^12.0|^13.0",
-    "illuminate/support": "^12.0|^13.0",
+    "illuminate/auth": "^12.0|^13.30",
+    "illuminate/bus": "^12.0|^13.30",
+    "illuminate/console": "^12.0|^13.30",
+    "illuminate/contracts": "^12.0|^13.30",
+    "illuminate/log": "^12.0|^13.30",
+    "illuminate/support": "^12.0|^13.30",
     "keepsuit/laravel-opentelemetry": "^2.2.4",
     "nesbot/carbon": "^3.0",
     "open-telemetry/api": "^1.8"
