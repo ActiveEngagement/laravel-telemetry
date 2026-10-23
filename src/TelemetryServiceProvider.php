@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry;
 
-use Override;
 use ActiveEngagement\Telemetry\Console\HeartbeatCommand;
 use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
@@ -24,6 +23,7 @@ use Illuminate\Support\ServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\QueueInstrumentation as KeepsuitQueueInstrumentation;
 use OpenTelemetry\API\Common\Time\Clock;
+use Override;
 
 class TelemetryServiceProvider extends ServiceProvider
 {

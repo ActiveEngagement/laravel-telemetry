@@ -56,7 +56,7 @@ class LogWatcher extends Watcher
     protected function level(mixed $level): Level
     {
         foreach (Level::cases() as $case) {
-            if (is_string($level) && strtolower($level) === $case->toPsrLogLevel()) {
+            if (is_string($level) && mb_strtolower($level) === $case->toPsrLogLevel()) {
                 return $case;
             }
         }

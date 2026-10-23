@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Illuminate\Contracts\Config\Repository;
 use ActiveEngagement\Telemetry\TelemetryServiceProvider;
+use Illuminate\Contracts\Config\Repository;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 use Laravel\Ai\AiServiceProvider;
 use Monolog\Handler\NullHandler;

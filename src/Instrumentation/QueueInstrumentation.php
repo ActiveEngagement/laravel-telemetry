@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry\Instrumentation;
 
-use Override;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Queue\Events\Looping;
@@ -14,6 +13,7 @@ use Keepsuit\LaravelOpenTelemetry\Instrumentation\QueueInstrumentation as Keepsu
 use OpenTelemetry\API\Trace\SpanInterface;
 use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\Context\ScopeInterface;
+use Override;
 use Throwable;
 
 class QueueInstrumentation extends KeepsuitQueueInstrumentation

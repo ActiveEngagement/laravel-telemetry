@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry\Instrumentation;
 
-use Override;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Str;
@@ -12,6 +11,7 @@ use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as Keep
 use OpenTelemetry\API\Trace\SpanInterface;
 use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\Context\ScopeInterface;
+use Override;
 
 class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
 {
