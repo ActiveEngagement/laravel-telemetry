@@ -76,9 +76,9 @@ class TelemetryServiceProvider extends ServiceProvider
 
     protected function registerUserContext(): void
     {
-        Context::dehydrating(
-            fn (ContextRepository $context) => $this->app->make(ContextResolver::class)->dehydrating($context)
-        );
+        Context::dehydrating(fn (ContextRepository $context) => rescue(
+            fn () => $this->app->make(ContextResolver::class)->dehydrating($context), report: false
+        ));
     }
 
     protected function registerClock(): void

@@ -6,6 +6,7 @@ use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
+use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 
 /**
  * @param  array<mixed>|null  $payload
@@ -41,6 +42,13 @@ it('keeps the original user when a queued job dispatches another job', function 
     runInWorker(Context::dehydrate());
 
     expect(app(ContextResolver::class)->userAttributes())->toBe(['user.id' => 7]);
+});
+
+it('keeps dispatching jobs when the user resolver fails', function (): void {
+    OpenTelemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    $this->actingAs(new GenericUser(['id' => 42]));
+
+    expect(Context::dehydrate())->toBeNull();
 });
 
 it('carries nothing when no user is logged in', function (): void {
