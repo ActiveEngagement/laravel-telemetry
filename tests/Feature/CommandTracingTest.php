@@ -2,11 +2,14 @@
 
 use Actengage\Telemetry\Instrumentation\ConsoleInstrumentation;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\SDK\Trace\ImmutableSpan;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 beforeEach(function (): void {
     $kernel = $this->app->make(Kernel::class);
@@ -60,18 +63,14 @@ it('does not trace long-running and heartbeat commands', function (string $comma
     expect(commandSpan($command))->toBeNull();
 })->with(['horizon:work', 'octane:start', 'pulse:work', 'telemetry:heartbeat']);
 
-it('does not trace the commands in the excluded option', function (): void {
-    $instrumentation = new class extends ConsoleInstrumentation
-    {
-        public function records(string $command): bool
-        {
-            return $this->shouldRecord($command);
-        }
-    };
+it('marks a command that throws as an error', function (): void {
+    Artisan::command('reports:send', fn () => throw new RuntimeException('The mail server is down.'));
 
-    $instrumentation->register(['excluded' => ['app:listen-*']]);
+    try {
+        $this->app->make(Kernel::class)->handle(new ArrayInput(['command' => 'reports:send']), new BufferedOutput);
+    } catch (RuntimeException $runtimeException) {
+        $this->app->make(ExceptionHandler::class)->report($runtimeException);
+    }
 
-    expect($instrumentation->records('app:listen-websocket'))->toBeFalse()
-        ->and($instrumentation->records('queue:work'))->toBeFalse()
-        ->and($instrumentation->records('reports:send'))->toBeTrue();
+    expect(commandSpan('reports:send')?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR);
 });
