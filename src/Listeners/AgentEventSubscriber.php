@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Watchers\Ai;
+namespace Actengage\Telemetry\Listeners;
 
 use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;

@@ -2,9 +2,9 @@
 
 namespace Actengage\Telemetry\Watchers;
 
+use Actengage\Telemetry\Listeners\AgentEventSubscriber;
+use Actengage\Telemetry\Listeners\ToolEventSubscriber;
 use Actengage\Telemetry\Telemetry;
-use Actengage\Telemetry\Watchers\Ai\AgentEventSubscriber;
-use Actengage\Telemetry\Watchers\Ai\ToolEventSubscriber;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 
