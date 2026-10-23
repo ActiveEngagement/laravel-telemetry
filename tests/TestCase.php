@@ -17,4 +17,9 @@ abstract class TestCase extends OrchestraTestCase
             AiServiceProvider::class,
         ];
     }
+
+    protected function defineEnvironment($app): void
+    {
+        $app->make('config')->set('logging.default', 'null');
+    }
 }

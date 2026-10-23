@@ -2,108 +2,63 @@
 
 namespace Actengage\Telemetry\Watchers;
 
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Telemetry;
-use Illuminate\Contracts\Events\Dispatcher;
+use Actengage\Telemetry\Logging\SendToOpenTelemetry;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Log\LogManager;
 use InvalidArgumentException;
-use OpenTelemetry\API\Common\Time\Clock;
-use OpenTelemetry\API\Logs\LoggerInterface;
-use OpenTelemetry\API\Logs\Severity;
-use Throwable;
-use ValueError;
+use Monolog\Level;
 
 class LogWatcher extends Watcher
 {
-    protected Severity $minimumSeverity;
+    protected Level $level;
 
     /**
      * @param  array<mixed>  $options
      */
-    public function __construct(
-        protected LoggerInterface $logger,
-        protected ContextResolver $contextResolver,
-        array $options = [],
-    ) {
+    public function __construct(array $options = [])
+    {
         parent::__construct($options);
 
-        $this->minimumSeverity = $this->severity($options['level'] ?? 'debug');
+        $this->level = $this->level($options['level'] ?? 'debug');
     }
 
     public function register(Application $app): void
     {
-        $app->make(Dispatcher::class)->listen(MessageLogged::class, $this->recordLog(...));
-    }
+        $config = $app->make(Repository::class);
+        $channel = $config->get('logging.default');
 
-    public function recordLog(MessageLogged $event): void
-    {
-        if (! Telemetry::isRecording()) {
+        if (! is_string($channel)) {
             return;
         }
 
-        Telemetry::withoutRecording(fn () => rescue(function () use ($event): void {
-            if ($this->shouldRecord($event)) {
-                $this->emit($event);
-            }
-        }, report: false));
-    }
+        $config->set("logging.channels.{$channel}.tap", [
+            ...$this->otherTaps($config->get("logging.channels.{$channel}.tap")),
+            SendToOpenTelemetry::class.':'.$this->level->toPsrLogLevel(),
+        ]);
 
-    protected function shouldRecord(MessageLogged $event): bool
-    {
-        return Severity::fromPsr3($event->level)->value >= $this->minimumSeverity->value;
-    }
-
-    protected function emit(MessageLogged $event): void
-    {
-        $builder = $this->logger->logRecordBuilder()
-            ->setTimestamp($this->timestamp())
-            ->setSeverityNumber(Severity::fromPsr3($event->level))
-            ->setSeverityText($event->level)
-            ->setBody($event->message)
-            ->setAttributes($this->attributes($event));
-
-        $exception = $this->exception($event);
-
-        if ($exception instanceof Throwable) {
-            $builder->setException($exception);
-        }
-
-        $builder->emit();
-    }
-
-    protected function timestamp(): int
-    {
-        return Clock::getDefault()->now();
+        $app->make(LogManager::class)->forgetChannel($channel);
     }
 
     /**
-     * @return array<mixed>
+     * @return list<mixed>
      */
-    protected function attributes(MessageLogged $event): array
+    protected function otherTaps(mixed $taps): array
     {
-        $context = $event->context;
-
-        if ($this->exception($event) instanceof Throwable) {
-            unset($context['exception']);
-        }
-
-        return $this->contextResolver->resolve($context);
+        return array_values(array_filter(
+            is_array($taps) ? $taps : [],
+            fn (mixed $tap): bool => ! is_string($tap) || ! str_starts_with($tap, SendToOpenTelemetry::class),
+        ));
     }
 
-    protected function exception(MessageLogged $event): ?Throwable
+    protected function level(mixed $level): Level
     {
-        $exception = $event->context['exception'] ?? null;
-
-        return $exception instanceof Throwable ? $exception : null;
-    }
-
-    protected function severity(mixed $level): Severity
-    {
-        try {
-            return Severity::fromPsr3(is_string($level) ? $level : '');
-        } catch (ValueError) {
-            throw new InvalidArgumentException('The log watcher level must be a PSR-3 log level.');
+        foreach (Level::cases() as $case) {
+            if (is_string($level) && strtolower($level) === $case->toPsrLogLevel()) {
+                return $case;
+            }
         }
+
+        throw new InvalidArgumentException('The log watcher level must be a PSR-3 log level.');
     }
 }

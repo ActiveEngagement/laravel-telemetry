@@ -1,11 +1,16 @@
 <?php
 
 use Actengage\Telemetry\Contracts\ContextResolver;
+use Actengage\Telemetry\Logging\SendToOpenTelemetry;
+use Actengage\Telemetry\Telemetry;
 use Actengage\Telemetry\Watchers\LogWatcher;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Log\Context\Repository as ContextRepository;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
+use Monolog\Handler\NullHandler;
+use Monolog\Handler\TestHandler;
 use OpenTelemetry\API\Logs\LoggerInterface;
 use OpenTelemetry\API\Logs\Severity;
 use OpenTelemetry\API\Trace\TracerInterface;
@@ -185,4 +190,44 @@ it('never breaks the app when recording fails', function (): void {
     watchLogsWith(new FakeLogger(fn () => throw new RuntimeException('Exporter is down')));
 
     expect(fn () => Log::error('hello'))->not->toThrow(Exception::class);
+});
+
+it('sends logs below LOG_LEVEL when TELEMETRY_LOG_LEVEL is lower', function (): void {
+    config()->set('logging.channels.files', ['driver' => 'monolog', 'handler' => TestHandler::class, 'with' => ['level' => 'warning']]);
+    config()->set('logging.default', 'files');
+    config()->set('telemetry.watchers', [LogWatcher::class => ['level' => 'info']]);
+
+    rewatch();
+    Log::info('only in OpenTelemetry');
+
+    $files = collect(Log::channel('files')->getLogger()->getHandlers())->first(fn ($handler): bool => $handler instanceof TestHandler);
+
+    expect(exportedLogs())->toHaveCount(1)
+        ->and($files->getRecords())->toBeEmpty();
+});
+
+it('adds the Laravel Context data to the log attributes', function (): void {
+    Context::add('tenant', 'acme');
+
+    Log::info('hello');
+
+    expect(exportedLogs()[0]->getAttributes()->get('tenant'))->toBe('acme');
+});
+
+it('does not send logs written to another channel', function (): void {
+    Log::build(['driver' => 'monolog', 'handler' => NullHandler::class])->info('not recorded');
+
+    expect(exportedLogs())->toBeEmpty();
+});
+
+it('keeps the other taps on the default channel', function (): void {
+    config()->set('logging.channels.null.tap', ['App\Logging\CustomizeFormatter']);
+
+    Telemetry::registerWatchers(app());
+    Telemetry::registerWatchers(app());
+
+    expect(config('logging.channels.null.tap'))->toBe([
+        'App\Logging\CustomizeFormatter',
+        SendToOpenTelemetry::class.':debug',
+    ]);
 });

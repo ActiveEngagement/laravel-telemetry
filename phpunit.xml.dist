@@ -15,7 +15,6 @@
         </include>
     </source>
     <php>
-        <env name="LOG_CHANNEL" value="null"/>
         <env name="OTEL_TRACES_EXPORTER" value="memory"/>
         <env name="OTEL_LOGS_EXPORTER" value="memory"/>
         <env name="OTEL_METRICS_EXPORTER" value="memory"/>

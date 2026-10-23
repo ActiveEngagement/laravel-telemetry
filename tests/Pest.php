@@ -1,8 +1,7 @@
 <?php
 
+use Actengage\Telemetry\Logging\SendToOpenTelemetry;
 use Actengage\Telemetry\Telemetry;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Log\Events\MessageLogged;
 use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use OpenTelemetry\SDK\Common\Export\InMemoryStorageManager;
 use OpenTelemetry\SDK\Logs\LogRecordExporterInterface;
@@ -51,7 +50,14 @@ function aiSpans(string $operation): array
 
 function rewatch(): void
 {
-    app(Dispatcher::class)->forget(MessageLogged::class);
+    $channel = config('logging.default');
+    $taps = (array) config("logging.channels.{$channel}.tap", []);
+
+    config()->set("logging.channels.{$channel}.tap", array_values(array_filter(
+        $taps,
+        fn (mixed $tap): bool => ! is_string($tap) || ! str_starts_with($tap, SendToOpenTelemetry::class),
+    )));
+    app('log')->forgetChannel($channel);
 
     Telemetry::registerWatchers(app());
 }
