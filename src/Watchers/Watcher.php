@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ActiveEngagement\Telemetry\Watchers;
 
 use Illuminate\Contracts\Foundation\Application;

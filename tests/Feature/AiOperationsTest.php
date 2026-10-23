@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
 use Illuminate\Support\Facades\Context;
 use Laravel\Ai\Audio;

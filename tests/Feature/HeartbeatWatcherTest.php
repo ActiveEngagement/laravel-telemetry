@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Jobs\RecordQueueHeartbeat;
 use ActiveEngagement\Telemetry\Watchers\HeartbeatWatcher;
 use Illuminate\Console\Scheduling\Event;

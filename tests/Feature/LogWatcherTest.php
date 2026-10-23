@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use ActiveEngagement\Telemetry\Logging\OpenTelemetryHandler;
 use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;

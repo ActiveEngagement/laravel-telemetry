@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 use Rector\Config\RectorConfig;
-use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
+use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 use RectorLaravel\Rector\Class_\DescriptionPropertyToDescriptionAttributeRector;
 use RectorLaravel\Rector\Class_\SignaturePropertyToSignatureAttributeRector;
 use RectorLaravel\Set\LaravelSetProvider;
@@ -13,7 +15,6 @@ return RectorConfig::configure()
         __DIR__.'/tests',
     ])
     ->withSkip([
-        SafeDeclareStrictTypesRector::class,
         DescriptionPropertyToDescriptionAttributeRector::class,
         SignaturePropertyToSignatureAttributeRector::class,
     ])
@@ -26,4 +27,7 @@ return RectorConfig::configure()
     )
     ->withPhpSets(php84: true)
     ->withSetProviders(LaravelSetProvider::class)
-    ->withComposerBased(laravel: true);
+    ->withComposerBased(laravel: true)
+    ->withRules([
+        DeclareStrictTypesRector::class,
+    ]);

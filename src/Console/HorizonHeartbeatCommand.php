@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ActiveEngagement\Telemetry\Console;
 
 use ActiveEngagement\Telemetry\Support\Heartbeat;

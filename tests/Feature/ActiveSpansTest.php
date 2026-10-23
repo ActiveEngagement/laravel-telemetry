@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use OpenTelemetry\API\Trace\Span;
 use OpenTelemetry\API\Trace\StatusCode;

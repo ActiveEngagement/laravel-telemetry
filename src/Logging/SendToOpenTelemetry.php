@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ActiveEngagement\Telemetry\Logging;
 
 use Illuminate\Contracts\Container\Container;

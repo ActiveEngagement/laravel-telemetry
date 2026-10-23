@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
 use ActiveEngagement\Telemetry\Telemetry;
 use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Events\AiSpanStarted;
 use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use Illuminate\Support\Facades\Event;

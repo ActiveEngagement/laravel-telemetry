@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Support\WallClock;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Log;

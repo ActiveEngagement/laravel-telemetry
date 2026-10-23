@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ActiveEngagement\Telemetry\Listeners;
 
 use Laravel\Ai\Events\AudioFailed;

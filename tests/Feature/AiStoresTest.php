@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Collection;
 use Laravel\Ai\Ai;
 use Laravel\Ai\Events\AddingFileToStore;

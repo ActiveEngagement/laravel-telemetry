@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ActiveEngagement\Telemetry\Listeners\Concerns;
 
 use Laravel\Ai\Responses\Data\TextUsage;

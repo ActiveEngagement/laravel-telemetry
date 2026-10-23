@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ActiveEngagement\Telemetry\Events\HeartbeatRecorded;
 use ActiveEngagement\Telemetry\Jobs\RecordQueueHeartbeat;
 use ActiveEngagement\Telemetry\Support\Heartbeat;
