@@ -2,7 +2,6 @@
 
 namespace Actengage\Telemetry\Listeners;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Events\AddingFileToStore;
 use Laravel\Ai\Events\AddingFileToStoreFailed;
 use Laravel\Ai\Events\CreatingStore;
@@ -16,6 +15,22 @@ use Laravel\Ai\Events\StoreDeleted;
 
 class StoreEventSubscriber extends ProviderEventSubscriber
 {
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [
+        CreatingStore::class => 'creating',
+        StoreCreated::class => 'created',
+        CreatingStoreFailed::class => 'creatingFailed',
+        AddingFileToStore::class => 'addingFile',
+        FileAddedToStore::class => 'fileAdded',
+        AddingFileToStoreFailed::class => 'addingFileFailed',
+        RemovingFileFromStore::class => 'removingFile',
+        FileRemovedFromStore::class => 'fileRemoved',
+        RemovingFileFromStoreFailed::class => 'removingFileFailed',
+        StoreDeleted::class => 'deleted',
+    ];
+
     public function creating(CreatingStore $event): void
     {
         $this->startSpan($event, 'store.create', $event->invocationId, $event->provider, attributes: [
@@ -74,21 +89,5 @@ class StoreEventSubscriber extends ProviderEventSubscriber
         $this->recordSpan($event, 'store.delete', $event->invocationId, $event->provider, [
             'gen_ai.data_source.id' => $event->storeId,
         ]);
-    }
-
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            CreatingStore::class => 'creating',
-            StoreCreated::class => 'created',
-            CreatingStoreFailed::class => 'creatingFailed',
-            AddingFileToStore::class => 'addingFile',
-            FileAddedToStore::class => 'fileAdded',
-            AddingFileToStoreFailed::class => 'addingFileFailed',
-            RemovingFileFromStore::class => 'removingFile',
-            FileRemovedFromStore::class => 'fileRemoved',
-            RemovingFileFromStoreFailed::class => 'removingFileFailed',
-            StoreDeleted::class => 'deleted',
-        ];
     }
 }

@@ -6,12 +6,18 @@ use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
 use Actengage\Telemetry\Events\AiSpanStarted;
 use Actengage\Telemetry\Support\ActiveSpans;
+use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use OpenTelemetry\API\Trace\SpanInterface;
 use OpenTelemetry\API\Trace\TracerInterface;
 
 abstract class AiEventSubscriber
 {
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [];
+
     public function __construct(
         protected TracerInterface $tracer,
         protected ActiveSpans $spans,
@@ -20,9 +26,17 @@ abstract class AiEventSubscriber
     ) {}
 
     /**
-     * @return array<class-string, string>
+     * @return array<class-string, Closure(object): void>
      */
-    abstract public function subscribe(Dispatcher $events): array;
+    public function subscribe(Dispatcher $events): array
+    {
+        return array_map(
+            fn (string $method): Closure => function (object $event) use ($method): void {
+                rescue(fn () => $this->{$method}($event), report: false);
+            },
+            $this->listen,
+        );
+    }
 
     protected function openSpan(string $key, SpanInterface $span, object $source): void
     {

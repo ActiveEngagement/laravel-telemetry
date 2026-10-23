@@ -5,7 +5,6 @@ namespace Actengage\Telemetry\Listeners;
 use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
 use Actengage\Telemetry\Telemetry;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Events\AgentFailed;
 use Laravel\Ai\Events\AgentFailedOver;
@@ -19,6 +18,18 @@ use OpenTelemetry\API\Trace\SpanKind;
 class AgentEventSubscriber extends AiEventSubscriber
 {
     use DescribesTokenUsage;
+
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [
+        PromptingAgent::class => 'start',
+        StreamingAgent::class => 'start',
+        AgentPrompted::class => 'end',
+        AgentStreamed::class => 'end',
+        AgentFailed::class => 'fail',
+        AgentFailedOver::class => 'failover',
+    ];
 
     public function start(PromptingAgent $event): void
     {
@@ -63,18 +74,6 @@ class AgentEventSubscriber extends AiEventSubscriber
             'gen_ai.provider.name' => $event->provider->name(),
             'gen_ai.request.model' => $event->model,
         ]);
-    }
-
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            PromptingAgent::class => 'start',
-            StreamingAgent::class => 'start',
-            AgentPrompted::class => 'end',
-            AgentStreamed::class => 'end',
-            AgentFailed::class => 'fail',
-            AgentFailedOver::class => 'failover',
-        ];
     }
 
     /**

@@ -47,6 +47,13 @@ class ActiveSpans
             ->end();
     }
 
+    public function abandonAll(): void
+    {
+        while ($this->spans !== []) {
+            array_pop($this->spans)->abandon();
+        }
+    }
+
     protected function abandonOpenedAfter(string $key): void
     {
         while (array_key_last($this->spans) !== $key) {

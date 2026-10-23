@@ -42,15 +42,11 @@ class LogWatcher extends Watcher
             return;
         }
 
-        Telemetry::withoutRecording(function () use ($event): void {
-            try {
-                if ($this->shouldRecord($event)) {
-                    $this->emit($event);
-                }
-            } catch (Throwable $throwable) {
-                $this->failed($throwable);
+        Telemetry::withoutRecording(fn () => rescue(function () use ($event): void {
+            if ($this->shouldRecord($event)) {
+                $this->emit($event);
             }
-        });
+        }, report: false));
     }
 
     protected function shouldRecord(MessageLogged $event): bool
@@ -101,8 +97,6 @@ class LogWatcher extends Watcher
 
         return $exception instanceof Throwable ? $exception : null;
     }
-
-    protected function failed(Throwable $throwable): void {}
 
     protected function severity(mixed $level): Severity
     {

@@ -10,7 +10,6 @@ use OpenTelemetry\API\Logs\LoggerInterface;
 use OpenTelemetry\API\Logs\Severity;
 use OpenTelemetry\API\Trace\TracerInterface;
 use Tests\Fixtures\FakeLogger;
-use Tests\Fixtures\LoggingFailuresLogWatcher;
 
 function watchLogsWith(LoggerInterface $logger): void
 {
@@ -176,15 +175,6 @@ it('sends logs to the bound OpenTelemetry logger', function (): void {
 
 it('does not record logs written while recording', function (): void {
     watchLogsWith($logger = new FakeLogger(fn () => Log::warning('logged while recording')));
-
-    Log::info('hello');
-
-    expect($logger->records)->toHaveCount(1);
-});
-
-it('does not record logs that failed() writes', function (): void {
-    config()->set('telemetry.watchers', [LoggingFailuresLogWatcher::class]);
-    watchLogsWith($logger = new FakeLogger(fn () => throw new RuntimeException('Exporter is down')));
 
     Log::info('hello');
 

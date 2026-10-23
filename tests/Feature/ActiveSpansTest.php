@@ -36,3 +36,18 @@ it('abandons the spans opened after the span it closes', function (): void {
 it('returns nothing for a span it never opened', function (): void {
     expect(new ActiveSpans()->close('unknown'))->toBeNull();
 });
+
+it('abandons every open span', function (): void {
+    $spans = new ActiveSpans;
+    $tracer = app(TracerInterface::class);
+
+    $spans->open('agent', $tracer->spanBuilder('agent')->startSpan());
+    $spans->open('tool', $tracer->spanBuilder('tool')->startSpan());
+
+    $spans->abandonAll();
+
+    expect(collect(exportedSpans())->map(fn (ImmutableSpan $span): string => $span->getStatus()->getCode())->all())
+        ->toBe([StatusCode::STATUS_ERROR, StatusCode::STATUS_ERROR])
+        ->and($spans->has('agent'))->toBeFalse()
+        ->and(Span::getCurrent()->getContext()->isValid())->toBeFalse();
+});

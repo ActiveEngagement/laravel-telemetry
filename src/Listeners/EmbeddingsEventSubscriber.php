@@ -2,13 +2,21 @@
 
 namespace Actengage\Telemetry\Listeners;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Events\EmbeddingsFailed;
 use Laravel\Ai\Events\EmbeddingsGenerated;
 use Laravel\Ai\Events\GeneratingEmbeddings;
 
 class EmbeddingsEventSubscriber extends ProviderEventSubscriber
 {
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [
+        GeneratingEmbeddings::class => 'start',
+        EmbeddingsGenerated::class => 'end',
+        EmbeddingsFailed::class => 'fail',
+    ];
+
     public function start(GeneratingEmbeddings $event): void
     {
         $this->startSpan($event, 'embeddings', $event->invocationId, $event->provider, $event->model);
@@ -22,14 +30,5 @@ class EmbeddingsEventSubscriber extends ProviderEventSubscriber
     public function fail(EmbeddingsFailed $event): void
     {
         $this->spans->fail($event->invocationId, $event->exception);
-    }
-
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            GeneratingEmbeddings::class => 'start',
-            EmbeddingsGenerated::class => 'end',
-            EmbeddingsFailed::class => 'fail',
-        ];
     }
 }

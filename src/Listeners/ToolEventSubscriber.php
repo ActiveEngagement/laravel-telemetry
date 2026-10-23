@@ -3,7 +3,6 @@
 namespace Actengage\Telemetry\Listeners;
 
 use Actengage\Telemetry\Telemetry;
-use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Events\InvokingTool;
 use Laravel\Ai\Events\ToolFailed;
 use Laravel\Ai\Events\ToolInvoked;
@@ -12,6 +11,15 @@ use OpenTelemetry\API\Trace\SpanKind;
 
 class ToolEventSubscriber extends AiEventSubscriber
 {
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [
+        InvokingTool::class => 'start',
+        ToolInvoked::class => 'end',
+        ToolFailed::class => 'fail',
+    ];
+
     public function start(InvokingTool $event): void
     {
         if (! Telemetry::isRecording()) {
@@ -40,14 +48,5 @@ class ToolEventSubscriber extends AiEventSubscriber
     public function fail(ToolFailed $event): void
     {
         $this->spans->fail($event->toolInvocationId, $event->exception);
-    }
-
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            InvokingTool::class => 'start',
-            ToolInvoked::class => 'end',
-            ToolFailed::class => 'fail',
-        ];
     }
 }

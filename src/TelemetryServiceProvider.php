@@ -9,7 +9,11 @@ use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Actengage\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Log\Context\Repository as ContextRepository;
+use Illuminate\Queue\Events\JobExceptionOccurred;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
 use OpenTelemetry\API\Common\Time\Clock;
@@ -24,7 +28,7 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->app->singleton(ActiveSpans::class);
     }
 
-    public function boot(Repository $config): void
+    public function boot(Repository $config, Dispatcher $events): void
     {
         $this->registerClock();
         $this->registerCommands();
@@ -37,8 +41,18 @@ class TelemetryServiceProvider extends ServiceProvider
         Telemetry::startRecording();
 
         $this->registerUserContext();
+        $this->registerSpanCleanup($events);
 
         $this->app->booted(Telemetry::registerWatchers(...));
+    }
+
+    protected function registerSpanCleanup(Dispatcher $events): void
+    {
+        $abandonOpenSpans = fn () => $this->app->make(ActiveSpans::class)->abandonAll();
+
+        $events->listen([JobProcessed::class, JobExceptionOccurred::class, JobFailed::class], $abandonOpenSpans);
+
+        $this->app->terminating($abandonOpenSpans);
     }
 
     protected function registerUserContext(): void

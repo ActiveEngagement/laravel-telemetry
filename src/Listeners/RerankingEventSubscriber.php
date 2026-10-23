@@ -2,13 +2,21 @@
 
 namespace Actengage\Telemetry\Listeners;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Events\Reranked;
 use Laravel\Ai\Events\Reranking;
 use Laravel\Ai\Events\RerankingFailed;
 
 class RerankingEventSubscriber extends ProviderEventSubscriber
 {
+    /**
+     * @var array<class-string, string>
+     */
+    protected array $listen = [
+        Reranking::class => 'start',
+        Reranked::class => 'end',
+        RerankingFailed::class => 'fail',
+    ];
+
     public function start(Reranking $event): void
     {
         $this->startSpan($event, 'rerank', $event->invocationId, $event->provider, $event->model);
@@ -22,14 +30,5 @@ class RerankingEventSubscriber extends ProviderEventSubscriber
     public function fail(RerankingFailed $event): void
     {
         $this->spans->fail($event->invocationId, $event->exception);
-    }
-
-    public function subscribe(Dispatcher $events): array
-    {
-        return [
-            Reranking::class => 'start',
-            Reranked::class => 'end',
-            RerankingFailed::class => 'fail',
-        ];
     }
 }
