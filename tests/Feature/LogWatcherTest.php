@@ -1,6 +1,7 @@
 <?php
 
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Logging\OpenTelemetryHandler;
 use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
 use ActiveEngagement\Telemetry\Telemetry;
 use ActiveEngagement\Telemetry\Watchers\LogWatcher;
@@ -174,6 +175,16 @@ it('reports a level that is not a PSR-3 level and sends no logs', function (): v
 
     Exceptions::assertReported(InvalidArgumentException::class);
     expect(exportedLogs())->toBeEmpty();
+});
+
+it('keeps the default channel when the tap fails', function (): void {
+    app()->bind(OpenTelemetryHandler::class, fn () => throw new RuntimeException('Handler is broken'));
+
+    rewatch();
+    $handlers = Log::driver()->getLogger()->getHandlers();
+
+    expect($handlers)->toHaveCount(1)
+        ->and($handlers[0])->toBeInstanceOf(NullHandler::class);
 });
 
 it('sends logs to the bound OpenTelemetry logger', function (): void {

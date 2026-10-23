@@ -12,6 +12,11 @@ class SendToOpenTelemetry
 
     public function __invoke(Logger $logger, string $level): void
     {
+        rescue(fn () => $this->pushHandler($logger, $level), report: false);
+    }
+
+    protected function pushHandler(Logger $logger, string $level): void
+    {
         $monolog = $logger->getLogger();
 
         if ($monolog instanceof Monolog) {
