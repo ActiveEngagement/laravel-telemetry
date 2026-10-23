@@ -2,9 +2,11 @@
 
 namespace Actengage\Telemetry\Listeners;
 
+use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
 use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Events\AgentFailed;
@@ -24,6 +26,7 @@ class AgentEventSubscriber
     public function __construct(
         protected TracerInterface $tracer,
         protected ActiveSpans $spans,
+        protected ContextResolver $contextResolver,
     ) {}
 
     public function start(PromptingAgent $event): void
@@ -36,10 +39,13 @@ class AgentEventSubscriber
 
         $span = $this->tracer->spanBuilder('invoke_agent '.$agent)
             ->setSpanKind(SpanKind::KIND_INTERNAL)
-            ->setAttribute('gen_ai.operation.name', 'invoke_agent')
-            ->setAttribute('gen_ai.agent.name', $agent)
-            ->setAttribute('gen_ai.provider.name', $event->prompt->provider->name())
-            ->setAttribute('gen_ai.request.model', $event->prompt->model)
+            ->setAttributes([
+                'gen_ai.operation.name' => 'invoke_agent',
+                'gen_ai.agent.name' => $agent,
+                'gen_ai.provider.name' => $event->prompt->provider->name(),
+                'gen_ai.request.model' => $event->prompt->model,
+                ...$this->contextResolver->userAttributes($this->participant($event->prompt->agent)),
+            ])
             ->startSpan();
 
         $this->spans->open($event->invocationId, $span);
@@ -83,6 +89,13 @@ class AgentEventSubscriber
     protected function agentName(Agent $agent): string
     {
         return class_basename($agent);
+    }
+
+    protected function participant(Agent $agent): ?Authenticatable
+    {
+        $participant = method_exists($agent, 'conversationParticipant') ? $agent->conversationParticipant() : null;
+
+        return $participant instanceof Authenticatable ? $participant : null;
     }
 
     /**

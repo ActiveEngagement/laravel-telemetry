@@ -1,5 +1,7 @@
 <?php
 
+use Actengage\Telemetry\Support\KeepsuitContextResolver;
+use Illuminate\Support\Facades\Context;
 use Laravel\Ai\Audio;
 use Laravel\Ai\Classification;
 use Laravel\Ai\Classification\Boolean;
@@ -53,3 +55,12 @@ it('records a failed provider operation', function (string $operation, Closure $
     expect($span->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
         ->and($span->getStatus()->getDescription())->toBe('The provider is down.');
 })->with('provider operations');
+
+it('adds the user carried into a queued job to a provider operation span', function (): void {
+    Context::addHidden(KeepsuitContextResolver::USER_CONTEXT_KEY, ['user.id' => 7]);
+    Embeddings::fake();
+
+    Embeddings::for(['Hello'])->generate();
+
+    expect(aiSpans('embeddings')[0]->getAttributes()->get('user.id'))->toBe(7);
+});

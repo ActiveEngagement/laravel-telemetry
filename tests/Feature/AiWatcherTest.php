@@ -1,6 +1,7 @@
 <?php
 
 use Actengage\Telemetry\Telemetry;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Collection;
 use Laravel\Ai\Exceptions\ProviderOverloadedException;
 use Laravel\Ai\Providers\Provider;
@@ -14,6 +15,7 @@ use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\SDK\Trace\EventInterface;
 use OpenTelemetry\SDK\Trace\ImmutableSpan;
+use Tests\Fixtures\ConversationAgent;
 use Tests\Fixtures\SupportAgent;
 
 it('traces an agent prompt', function (): void {
@@ -160,4 +162,22 @@ it('records a provider failover on the agent span', function (): void {
             'gen_ai.provider.name' => 'anthropic',
             'gen_ai.request.model' => 'claude-sonnet-4-5',
         ]);
+});
+
+it('adds the logged-in user to the agent span', function (): void {
+    $this->actingAs(new GenericUser(['id' => 42]));
+    SupportAgent::fake(['Hello']);
+
+    new SupportAgent()->prompt('Hi');
+
+    expect(aiSpans('invoke_agent')[0]->getAttributes()->get('user.id'))->toBe(42);
+});
+
+it('prefers the conversation participant over the logged-in user', function (): void {
+    $this->actingAs(new GenericUser(['id' => 42]));
+    ConversationAgent::fake(['Hello']);
+
+    new ConversationAgent(new GenericUser(['id' => 7]))->prompt('Hi');
+
+    expect(aiSpans('invoke_agent')[0]->getAttributes()->get('user.id'))->toBe(7);
 });

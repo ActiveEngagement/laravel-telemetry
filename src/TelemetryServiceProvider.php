@@ -9,6 +9,8 @@ use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Actengage\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Log\Context\Repository as ContextRepository;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
 use OpenTelemetry\API\Common\Time\Clock;
 
@@ -34,7 +36,16 @@ class TelemetryServiceProvider extends ServiceProvider
 
         Telemetry::startRecording();
 
+        $this->registerUserContext();
+
         $this->app->booted(Telemetry::registerWatchers(...));
+    }
+
+    protected function registerUserContext(): void
+    {
+        Context::dehydrating(
+            fn (ContextRepository $context) => $this->app->make(ContextResolver::class)->dehydrating($context)
+        );
     }
 
     protected function registerClock(): void

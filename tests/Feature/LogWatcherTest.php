@@ -3,6 +3,8 @@
 use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Watchers\LogWatcher;
 use Illuminate\Auth\GenericUser;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Support\Facades\Log;
 use OpenTelemetry\API\Logs\LoggerInterface;
 use OpenTelemetry\API\Logs\Severity;
@@ -95,6 +97,13 @@ it('uses the bound context resolver', function (): void {
         {
             return ['tenant' => 'acme'];
         }
+
+        public function userAttributes(?Authenticatable $user = null): array
+        {
+            return [];
+        }
+
+        public function dehydrating(ContextRepository $context): void {}
     });
 
     rewatch();
@@ -112,6 +121,13 @@ it('does not pass a Throwable exception to the context resolver', function (): v
         {
             return $this->received = $context;
         }
+
+        public function userAttributes(?Authenticatable $user = null): array
+        {
+            return [];
+        }
+
+        public function dehydrating(ContextRepository $context): void {}
     });
 
     rewatch();

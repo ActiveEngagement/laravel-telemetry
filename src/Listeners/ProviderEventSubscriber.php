@@ -2,6 +2,7 @@
 
 namespace Actengage\Telemetry\Listeners;
 
+use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
 use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;
@@ -19,6 +20,7 @@ abstract class ProviderEventSubscriber
     public function __construct(
         protected TracerInterface $tracer,
         protected ActiveSpans $spans,
+        protected ContextResolver $contextResolver,
     ) {}
 
     /**
@@ -28,7 +30,7 @@ abstract class ProviderEventSubscriber
 
     /**
      * @param  non-empty-string  $operation
-     * @param  array<non-empty-string, int|string|null>  $attributes
+     * @param  array<non-empty-string, bool|int|float|string|array<mixed>|null>  $attributes
      */
     protected function startSpan(
         string $operation,
@@ -47,6 +49,7 @@ abstract class ProviderEventSubscriber
                 'gen_ai.operation.name' => $operation,
                 'gen_ai.provider.name' => $provider->name(),
                 'gen_ai.request.model' => $model,
+                ...$this->contextResolver->userAttributes(),
                 ...$attributes,
             ]))
             ->startSpan();
@@ -55,7 +58,7 @@ abstract class ProviderEventSubscriber
     }
 
     /**
-     * @param  array<non-empty-string, int|string|null>  $attributes
+     * @param  array<non-empty-string, bool|int|float|string|array<mixed>|null>  $attributes
      */
     protected function endSpan(string $invocationId, array $attributes = []): void
     {
@@ -66,7 +69,7 @@ abstract class ProviderEventSubscriber
 
     /**
      * @param  non-empty-string  $operation
-     * @param  array<non-empty-string, int|string|null>  $attributes
+     * @param  array<non-empty-string, bool|int|float|string|array<mixed>|null>  $attributes
      */
     protected function recordSpan(string $operation, string $invocationId, Provider $provider, array $attributes): void
     {
@@ -83,11 +86,11 @@ abstract class ProviderEventSubscriber
     }
 
     /**
-     * @param  array<non-empty-string, int|string|null>  $attributes
-     * @return array<non-empty-string, int|string>
+     * @param  array<non-empty-string, bool|int|float|string|array<mixed>|null>  $attributes
+     * @return array<non-empty-string, bool|int|float|string|array<mixed>|null>
      */
     protected function withoutNulls(array $attributes): array
     {
-        return array_filter($attributes, fn (int|string|null $value): bool => $value !== null);
+        return array_filter($attributes, fn (bool|int|float|string|array|null $value): bool => $value !== null);
     }
 }
