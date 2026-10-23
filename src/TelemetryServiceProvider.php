@@ -5,6 +5,7 @@ namespace Actengage\Telemetry;
 use Actengage\Telemetry\Console\HeartbeatCommand;
 use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
 use Actengage\Telemetry\Contracts\ContextResolver;
+use Actengage\Telemetry\Instrumentation\ConsoleInstrumentation;
 use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Actengage\Telemetry\Support\WallClock;
@@ -16,6 +17,7 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
+use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use OpenTelemetry\API\Common\Time\Clock;
 
 class TelemetryServiceProvider extends ServiceProvider
@@ -26,6 +28,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
         $this->app->singleton(ContextResolver::class, KeepsuitContextResolver::class);
         $this->app->singleton(ActiveSpans::class);
+        $this->app->bind(KeepsuitConsoleInstrumentation::class, ConsoleInstrumentation::class);
     }
 
     public function boot(Repository $config, Dispatcher $events): void
