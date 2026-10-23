@@ -18,8 +18,8 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            TelemetryServiceProvider::class,
             LaravelOpenTelemetryServiceProvider::class,
+            TelemetryServiceProvider::class,
             AiServiceProvider::class,
         ];
     }

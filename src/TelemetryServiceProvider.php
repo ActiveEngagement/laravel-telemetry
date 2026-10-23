@@ -32,11 +32,12 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->app->singleton(ActiveSpans::class);
         $this->app->bind(KeepsuitConsoleInstrumentation::class, ConsoleInstrumentation::class);
         $this->app->bind(KeepsuitQueueInstrumentation::class, QueueInstrumentation::class);
+
+        $this->app->booting(fn () => $this->registerResourceAttributes($this->app->make(Repository::class)));
     }
 
     public function boot(Repository $config, Dispatcher $events): void
     {
-        $this->registerResourceAttributes($config);
         $this->registerClock();
         $this->registerCommands();
         $this->registerPublishing();
