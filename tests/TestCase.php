@@ -5,6 +5,7 @@ namespace Tests;
 use Actengage\Telemetry\TelemetryServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 use Laravel\Ai\AiServiceProvider;
+use Monolog\Handler\NullHandler;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
@@ -25,7 +26,11 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function defineEnvironment($app): void
     {
-        $app->make('config')->set(['logging.default' => 'null', ...$this->config]);
+        $app->make('config')->set([
+            'logging.default' => 'test',
+            'logging.channels.test' => ['driver' => 'monolog', 'handler' => NullHandler::class],
+            ...$this->config,
+        ]);
     }
 
     /**

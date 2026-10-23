@@ -221,12 +221,12 @@ it('does not send logs written to another channel', function (): void {
 });
 
 it('keeps the other taps on the default channel', function (): void {
-    config()->set('logging.channels.null.tap', ['App\Logging\CustomizeFormatter']);
+    config()->set('logging.channels.test.tap', ['App\Logging\CustomizeFormatter']);
 
     Telemetry::registerWatchers(app());
     Telemetry::registerWatchers(app());
 
-    expect(config('logging.channels.null.tap'))->toBe([
+    expect(config('logging.channels.test.tap'))->toBe([
         'App\Logging\CustomizeFormatter',
         SendToOpenTelemetry::class.':debug',
     ]);
