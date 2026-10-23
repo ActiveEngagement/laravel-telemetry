@@ -1,6 +1,12 @@
+includes:
+  - vendor/larastan/larastan/extension.neon
+
 parameters:
   paths:
     - config
     - src
+
+  configDirectories:
+    - config
 
   level: max

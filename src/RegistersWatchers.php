@@ -29,12 +29,21 @@ trait RegistersWatchers
             return;
         }
 
-        $class = is_string($key) ? $key : $options;
+        static::makeWatcher($app, $key, $options)->register($app);
+    }
 
-        if (! is_string($class) || ! is_a($class, Watcher::class, true)) {
-            throw new InvalidArgumentException('Each telemetry watcher must extend '.Watcher::class.'.');
+    /**
+     * @throws InvalidArgumentException
+     */
+    protected static function makeWatcher(Application $app, int|string $key, mixed $options): Watcher
+    {
+        $class = is_string($key) ? $key : $options;
+        $watcher = is_string($class) ? $app->make($class, ['options' => is_array($options) ? $options : []]) : null;
+
+        if ($watcher instanceof Watcher) {
+            return $watcher;
         }
 
-        $app->make($class, ['options' => is_array($options) ? $options : []])->register($app);
+        throw new InvalidArgumentException('Each telemetry watcher must extend '.Watcher::class.'.');
     }
 }
