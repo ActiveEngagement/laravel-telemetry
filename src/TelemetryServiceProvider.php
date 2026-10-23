@@ -30,6 +30,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
     public function boot(Repository $config, Dispatcher $events): void
     {
+        $this->registerResourceAttributes($config);
         $this->registerClock();
         $this->registerCommands();
         $this->registerPublishing();
@@ -44,6 +45,18 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->registerSpanCleanup($events);
 
         $this->app->booted(Telemetry::registerWatchers(...));
+    }
+
+    protected function registerResourceAttributes(Repository $config): void
+    {
+        $deployment = $config->get('telemetry.deployment');
+        $configured = $config->get('opentelemetry.resource_attributes');
+
+        $config->set('opentelemetry.resource_attributes', [
+            'deployment.environment.name' => $this->app->environment(),
+            ...is_string($deployment) && $deployment !== '' ? ['service.version' => $deployment] : [],
+            ...is_array($configured) ? $configured : [],
+        ]);
     }
 
     protected function registerSpanCleanup(Dispatcher $events): void

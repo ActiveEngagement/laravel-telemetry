@@ -5,6 +5,8 @@ use Actengage\Telemetry\Watchers;
 return [
     'enabled' => env('TELEMETRY_ENABLED', true),
 
+    'deployment' => env('LARAVEL_CLOUD_DEPLOY_UUID', env('FORGE_DEPLOY_COMMIT', env('ATHENA_DEPLOY_COMMIT'))),
+
     'watchers' => [
         Watchers\AiWatcher::class => env('TELEMETRY_AI_WATCHER', true),
 
