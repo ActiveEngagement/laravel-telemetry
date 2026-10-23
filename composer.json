@@ -10,6 +10,7 @@
     "illuminate/console": "^12.0|^13.30",
     "illuminate/contracts": "^12.0|^13.30",
     "illuminate/log": "^12.0|^13.30",
+    "illuminate/queue": "^12.0|^13.30",
     "illuminate/support": "^12.0|^13.30",
     "keepsuit/laravel-opentelemetry": "^2.2.4",
     "nesbot/carbon": "^3.0",
