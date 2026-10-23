@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 use RectorLaravel\Rector\Class_\DescriptionPropertyToDescriptionAttributeRector;
 use RectorLaravel\Rector\Class_\SignaturePropertyToSignatureAttributeRector;
-use RectorLaravel\Set\LaravelSetProvider;
+use RectorLaravel\Set\LaravelSetList;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -18,6 +19,13 @@ return RectorConfig::configure()
         DescriptionPropertyToDescriptionAttributeRector::class,
         SignaturePropertyToSignatureAttributeRector::class,
     ])
+    ->withSets([
+        LaravelSetList::LARAVEL_ARRAY_STR_FUNCTION_TO_STATIC_CALL,
+        LaravelSetList::LARAVEL_CODE_QUALITY,
+        LaravelSetList::LARAVEL_COLLECTION,
+        LaravelSetList::LARAVEL_CONTAINER_STRING_TO_FULLY_QUALIFIED_NAME,
+        LaravelSetList::LARAVEL_FACADE_ALIASES_TO_FULL_NAMES,
+    ])
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -26,8 +34,9 @@ return RectorConfig::configure()
         earlyReturn: true,
     )
     ->withPhpSets(php84: true)
-    ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(laravel: true)
+    ->withImportNames(removeUnusedImports: true)
     ->withRules([
         DeclareStrictTypesRector::class,
+        SeparateMultiUseImportsRector::class,
     ]);

@@ -25,7 +25,7 @@ it('carries the logged-in user into a queued job', function (): void {
 
     runInWorker(Context::dehydrate());
 
-    expect(app(ContextResolver::class)->userAttributes())->toBe(['user.id' => 42]);
+    expect(resolve(ContextResolver::class)->userAttributes())->toBe(['user.id' => 42]);
 });
 
 it('adds the carried user to logs written in a queued job', function (): void {
@@ -43,7 +43,7 @@ it('keeps the original user when a queued job dispatches another job', function 
 
     runInWorker(Context::dehydrate());
 
-    expect(app(ContextResolver::class)->userAttributes())->toBe(['user.id' => 7]);
+    expect(resolve(ContextResolver::class)->userAttributes())->toBe(['user.id' => 7]);
 });
 
 it('keeps dispatching jobs when the user resolver fails', function (): void {
@@ -76,5 +76,5 @@ it('prefers the logged-in user over the carried user', function (): void {
     Context::addHidden(KeepsuitContextResolver::USER_CONTEXT_KEY, ['user.id' => 7]);
     $this->actingAs(new GenericUser(['id' => 42]));
 
-    expect(app(ContextResolver::class)->userAttributes())->toBe(['user.id' => 42]);
+    expect(resolve(ContextResolver::class)->userAttributes())->toBe(['user.id' => 42]);
 });

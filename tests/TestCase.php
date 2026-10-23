@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Illuminate\Contracts\Config\Repository;
 use ActiveEngagement\Telemetry\TelemetryServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 use Laravel\Ai\AiServiceProvider;
@@ -28,7 +29,7 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function defineEnvironment($app): void
     {
-        $app->make('config')->set([
+        $app->make(Repository::class)->set([
             'logging.default' => 'test',
             'logging.channels.test' => ['driver' => 'monolog', 'handler' => NullHandler::class],
             ...$this->config,

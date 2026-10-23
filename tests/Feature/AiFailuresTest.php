@@ -38,14 +38,14 @@ it('closes spans left open when a queued job ends', function (): void {
     Queue::connection('sync')->push(new LeavesSpanOpen);
 
     expect(strayStatus())->toBe(StatusCode::STATUS_ERROR)
-        ->and(app(ActiveSpans::class)->has('stray'))->toBeFalse();
+        ->and(resolve(ActiveSpans::class)->has('stray'))->toBeFalse();
 });
 
 it('closes spans left open when the request ends', function (): void {
-    app(ActiveSpans::class)->open('stray', app(TracerInterface::class)->spanBuilder('stray')->startSpan());
+    resolve(ActiveSpans::class)->open('stray', resolve(TracerInterface::class)->spanBuilder('stray')->startSpan());
 
     app()->terminate();
 
     expect(strayStatus())->toBe(StatusCode::STATUS_ERROR)
-        ->and(app(ActiveSpans::class)->has('stray'))->toBeFalse();
+        ->and(resolve(ActiveSpans::class)->has('stray'))->toBeFalse();
 });

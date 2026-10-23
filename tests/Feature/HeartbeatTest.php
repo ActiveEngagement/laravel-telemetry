@@ -14,7 +14,7 @@ use OpenTelemetry\API\Logs\Severity;
 use Tests\Fixtures\FakeMasterSupervisorRepository;
 
 it('records a heartbeat as an info log in OpenTelemetry', function (): void {
-    app(Heartbeat::class)->record('scheduler-heartbeat', ['region' => 'us']);
+    resolve(Heartbeat::class)->record('scheduler-heartbeat', ['region' => 'us']);
 
     $logs = exportedLogs();
 
@@ -27,7 +27,7 @@ it('records a heartbeat as an info log in OpenTelemetry', function (): void {
 it('dispatches HeartbeatRecorded after recording', function (): void {
     Event::fake([HeartbeatRecorded::class]);
 
-    app(Heartbeat::class)->record('scheduler-heartbeat', ['region' => 'us']);
+    resolve(Heartbeat::class)->record('scheduler-heartbeat', ['region' => 'us']);
 
     Event::assertDispatched(HeartbeatRecorded::class, fn (HeartbeatRecorded $event): bool => $event->name === 'scheduler-heartbeat'
         && $event->attributes === ['region' => 'us']);
@@ -36,7 +36,7 @@ it('dispatches HeartbeatRecorded after recording', function (): void {
 it('records nothing while recording is stopped', function (): void {
     Telemetry::stopRecording();
 
-    app(Heartbeat::class)->record('scheduler-heartbeat');
+    resolve(Heartbeat::class)->record('scheduler-heartbeat');
 
     expect(exportedLogs())->toBeEmpty();
 });
@@ -50,7 +50,7 @@ it('records a scheduler heartbeat from telemetry:heartbeat', function (): void {
 it('records a queue heartbeat from the queued job', function (): void {
     expect(new RecordQueueHeartbeat)->toBeInstanceOf(ShouldQueue::class);
 
-    app(Dispatcher::class)->dispatchSync(new RecordQueueHeartbeat);
+    resolve(Dispatcher::class)->dispatchSync(new RecordQueueHeartbeat);
 
     expect(exportedLogs()[0]->getBody())->toBe('queue-heartbeat');
 });

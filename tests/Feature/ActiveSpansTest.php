@@ -10,7 +10,7 @@ use OpenTelemetry\SDK\Trace\ImmutableSpan;
 
 it('closes a span and restores the previous active span', function (): void {
     $spans = new ActiveSpans;
-    $span = app(TracerInterface::class)->spanBuilder('agent')->startSpan();
+    $span = resolve(TracerInterface::class)->spanBuilder('agent')->startSpan();
 
     $spans->open('agent', $span);
 
@@ -22,7 +22,7 @@ it('closes a span and restores the previous active span', function (): void {
 
 it('abandons the spans opened after the span it closes', function (): void {
     $spans = new ActiveSpans;
-    $tracer = app(TracerInterface::class);
+    $tracer = resolve(TracerInterface::class);
 
     $spans->open('agent', $tracer->spanBuilder('agent')->startSpan());
     $spans->open('tool', $tracer->spanBuilder('tool')->startSpan());
@@ -41,7 +41,7 @@ it('returns nothing for a span it never opened', function (): void {
 
 it('abandons every open span', function (): void {
     $spans = new ActiveSpans;
-    $tracer = app(TracerInterface::class);
+    $tracer = resolve(TracerInterface::class);
 
     $spans->open('agent', $tracer->spanBuilder('agent')->startSpan());
     $spans->open('tool', $tracer->spanBuilder('tool')->startSpan());

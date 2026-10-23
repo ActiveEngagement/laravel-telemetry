@@ -40,7 +40,7 @@ it('records logs in OpenTelemetry', function (): void {
 });
 
 it('links logs to the active trace', function (): void {
-    $span = app(TracerInterface::class)->spanBuilder('request')->startSpan();
+    $span = resolve(TracerInterface::class)->spanBuilder('request')->startSpan();
     $scope = $span->activate();
 
     Log::info('inside the span');

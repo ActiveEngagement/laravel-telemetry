@@ -85,7 +85,7 @@ it('records a failed agent prompt', function (): void {
 
 it('makes the agent span the parent of spans started during the prompt', function (): void {
     SupportAgent::fake(function (): string {
-        app(TracerInterface::class)->spanBuilder('provider call')->startSpan()->end();
+        resolve(TracerInterface::class)->spanBuilder('provider call')->startSpan()->end();
 
         return 'Hello';
     });

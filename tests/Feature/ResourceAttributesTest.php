@@ -9,7 +9,7 @@ use OpenTelemetry\API\Trace\TracerInterface;
  */
 function resourceAttributes(): array
 {
-    app(TracerInterface::class)->spanBuilder('request')->startSpan()->end();
+    resolve(TracerInterface::class)->spanBuilder('request')->startSpan()->end();
 
     return exportedSpans()[0]->getResource()->getAttributes()->toArray();
 }

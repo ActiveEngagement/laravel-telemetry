@@ -13,7 +13,7 @@ use OpenTelemetry\SDK\Trace\ImmutableSpan;
 it('lets the app override the resource attributes', function (): void {
     $this->refreshWithConfig(['opentelemetry.resource_attributes' => ['deployment.environment.name' => 'staging']]);
 
-    app(TracerInterface::class)->spanBuilder('request')->startSpan()->end();
+    resolve(TracerInterface::class)->spanBuilder('request')->startSpan()->end();
 
     expect(exportedSpans()[0]->getResource()->getAttributes()->get('deployment.environment.name'))->toBe('staging');
 });

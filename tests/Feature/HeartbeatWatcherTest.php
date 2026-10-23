@@ -62,7 +62,7 @@ it('schedules the heartbeats from the config when the app boots', function (): v
 
     $commands = array_map(
         fn (Event $event): string => (string) ($event->command ?? $event->description),
-        app(Schedule::class)->events(),
+        resolve(Schedule::class)->events(),
     );
 
     expect($commands)->toHaveCount(2)

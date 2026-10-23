@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
 use ActiveEngagement\Telemetry\Telemetry;
+use Illuminate\Log\LogManager;
 use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use OpenTelemetry\SDK\Common\Export\InMemoryStorageManager;
 use OpenTelemetry\SDK\Logs\LogRecordExporterInterface;
@@ -26,7 +27,7 @@ function exportedLogs(): array
 {
     OpenTelemetry::flush();
 
-    return array_values(app(LogRecordExporterInterface::class)->getStorage()->getArrayCopy());
+    return array_values(resolve(LogRecordExporterInterface::class)->getStorage()->getArrayCopy());
 }
 
 /**
@@ -36,7 +37,7 @@ function exportedSpans(): array
 {
     OpenTelemetry::flush();
 
-    return array_values(app(SpanExporterInterface::class)->getStorage()->getArrayCopy());
+    return array_values(resolve(SpanExporterInterface::class)->getStorage()->getArrayCopy());
 }
 
 /**
@@ -59,7 +60,7 @@ function rewatch(): void
         $taps,
         fn (mixed $tap): bool => ! is_string($tap) || ! str_starts_with($tap, SendToOpenTelemetry::class),
     )));
-    app('log')->forgetChannel($channel);
+    resolve(LogManager::class)->forgetChannel($channel);
 
     Telemetry::registerWatchers(app());
 }
