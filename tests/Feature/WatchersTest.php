@@ -1,6 +1,7 @@
 <?php
 
 use ActiveEngagement\Telemetry\Watchers\LogWatcher;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Log;
 
 it('registers no watchers when TELEMETRY_ENABLED is false', function (): void {
@@ -48,8 +49,22 @@ it('skips a watcher whose enabled option is false', function (): void {
     expect(exportedLogs())->toBeEmpty();
 });
 
-it('rejects a class that is not a watcher', function (): void {
-    config()->set('telemetry.watchers', [stdClass::class => true]);
+it('reports a class that is not a watcher and registers the other watchers', function (): void {
+    Exceptions::fake();
+    config()->set('telemetry.watchers', [stdClass::class => true, LogWatcher::class => ['level' => 'debug']]);
 
     rewatch();
-})->throws(InvalidArgumentException::class);
+    Log::error('recorded');
+
+    Exceptions::assertReported(InvalidArgumentException::class);
+    expect(exportedLogs())->toHaveCount(1);
+});
+
+it('keeps the app booting when a watcher option is invalid', function (): void {
+    refreshWithEnv('TELEMETRY_QUEUE_MONITOR', 'cloud');
+
+    Log::error('recorded');
+
+    expect(exportedLogs())->toHaveCount(1)
+        ->and(exportedLogs()[0]->getBody())->toBe('recorded');
+});

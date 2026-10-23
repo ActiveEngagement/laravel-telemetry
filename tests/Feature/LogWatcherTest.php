@@ -8,6 +8,7 @@ use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Log;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\TestHandler;
@@ -164,11 +165,16 @@ it('falls back to LOG_LEVEL', function (): void {
         ->and($logs[0]->getBody())->toBe('recorded');
 });
 
-it('rejects a level that is not a PSR-3 level', function (): void {
+it('reports a level that is not a PSR-3 level and sends no logs', function (): void {
+    Exceptions::fake();
     config()->set('telemetry.watchers', [LogWatcher::class => ['level' => 'loud']]);
 
     rewatch();
-})->throws(InvalidArgumentException::class);
+    Log::error('not recorded');
+
+    Exceptions::assertReported(InvalidArgumentException::class);
+    expect(exportedLogs())->toBeEmpty();
+});
 
 it('sends logs to the bound OpenTelemetry logger', function (): void {
     watchLogsWith($logger = new FakeLogger);
