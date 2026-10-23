@@ -17,8 +17,10 @@ class AiWatcher extends Watcher
         Listeners\AudioEventSubscriber::class,
         Listeners\ClassificationEventSubscriber::class,
         Listeners\EmbeddingsEventSubscriber::class,
+        Listeners\FileEventSubscriber::class,
         Listeners\ImageEventSubscriber::class,
         Listeners\RerankingEventSubscriber::class,
+        Listeners\StoreEventSubscriber::class,
         Listeners\ToolEventSubscriber::class,
         Listeners\TranscriptionEventSubscriber::class,
     ];

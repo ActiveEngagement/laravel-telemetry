@@ -16,7 +16,7 @@ class ImageEventSubscriber extends ProviderEventSubscriber
 
     public function end(ImageGenerated $event): void
     {
-        $this->endSpan($event->invocationId, $event->response->usage, $event->response->meta);
+        $this->endSpan($event->invocationId, $this->responseAttributes($event->response->usage, $event->response->meta));
     }
 
     public function fail(ImageFailed $event): void
