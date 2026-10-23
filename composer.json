@@ -17,11 +17,15 @@
   },
   "require-dev": {
     "driftingly/rector-laravel": "^2.6",
+    "laravel/ai": "^1.0",
     "laravel/horizon": "^5.50",
     "orchestra/testbench": "^10.0|^11.0",
     "pestphp/pest": "^4.0",
     "phpstan/phpstan": "^2.3",
     "rector/rector": "^2.7"
+  },
+  "conflict": {
+    "laravel/ai": "<1.0"
   },
   "autoload": {
     "psr-4": {
@@ -55,6 +59,7 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "suggest": {
+    "laravel/ai": "Required for AI tracing (^1.0).",
     "laravel/horizon": "Required for the horizon queue heartbeat (^5.50)."
   }
 }
