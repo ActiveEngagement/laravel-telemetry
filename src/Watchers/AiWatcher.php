@@ -2,14 +2,27 @@
 
 namespace Actengage\Telemetry\Watchers;
 
-use Actengage\Telemetry\Listeners\AgentEventSubscriber;
-use Actengage\Telemetry\Listeners\ToolEventSubscriber;
+use Actengage\Telemetry\Listeners;
 use Actengage\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 
 class AiWatcher extends Watcher
 {
+    /**
+     * @var list<class-string>
+     */
+    protected array $subscribe = [
+        Listeners\AgentEventSubscriber::class,
+        Listeners\AudioEventSubscriber::class,
+        Listeners\ClassificationEventSubscriber::class,
+        Listeners\EmbeddingsEventSubscriber::class,
+        Listeners\ImageEventSubscriber::class,
+        Listeners\RerankingEventSubscriber::class,
+        Listeners\ToolEventSubscriber::class,
+        Listeners\TranscriptionEventSubscriber::class,
+    ];
+
     public function register(Application $app): void
     {
         if (! Telemetry::isAiInstalled()) {
@@ -18,7 +31,8 @@ class AiWatcher extends Watcher
 
         $events = $app->make(Dispatcher::class);
 
-        $events->subscribe(AgentEventSubscriber::class);
-        $events->subscribe(ToolEventSubscriber::class);
+        foreach ($this->subscribe as $subscriber) {
+            $events->subscribe($subscriber);
+        }
     }
 }

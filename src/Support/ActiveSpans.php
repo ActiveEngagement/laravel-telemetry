@@ -18,6 +18,11 @@ class ActiveSpans
         return isset($this->spans[$key]);
     }
 
+    public function get(string $key): ?SpanInterface
+    {
+        return ($this->spans[$key] ?? null)?->span;
+    }
+
     public function open(string $key, SpanInterface $span): void
     {
         $this->spans[$key] = new OpenSpan($span, $span->activate());

@@ -1,6 +1,9 @@
 <?php
 
 use Actengage\Telemetry\Telemetry;
+use Illuminate\Support\Collection;
+use Laravel\Ai\Exceptions\ProviderOverloadedException;
+use Laravel\Ai\Providers\Provider;
 use Laravel\Ai\Responses\AgentResponse;
 use Laravel\Ai\Responses\Data\Meta;
 use Laravel\Ai\Responses\Data\TextUsage;
@@ -12,17 +15,6 @@ use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\SDK\Trace\EventInterface;
 use OpenTelemetry\SDK\Trace\ImmutableSpan;
 use Tests\Fixtures\SupportAgent;
-
-/**
- * @return list<ImmutableSpan>
- */
-function aiSpans(string $operation): array
-{
-    return array_values(array_filter(
-        exportedSpans(),
-        fn (ImmutableSpan $span): bool => $span->getAttributes()->get('gen_ai.operation.name') === $operation,
-    ));
-}
 
 it('traces an agent prompt', function (): void {
     SupportAgent::fake([
@@ -145,4 +137,27 @@ it('records a failed tool call', function (): void {
 
     expect($tool->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
         ->and($tool->getStatus()->getDescription())->toBe('The order does not exist.');
+});
+
+it('records a provider failover on the agent span', function (): void {
+    SupportAgent::fake(function (string $prompt, Collection $attachments, Provider $provider): string {
+        if ($provider->name() === 'anthropic') {
+            throw ProviderOverloadedException::forProvider('anthropic');
+        }
+
+        return 'Hello';
+    });
+
+    new SupportAgent()->prompt('Hi', provider: ['anthropic' => 'claude-sonnet-4-5', 'openai' => 'gpt-5']);
+
+    $spans = aiSpans('invoke_agent');
+    $failover = collect($spans[0]->getEvents())->first(fn (EventInterface $event): bool => $event->getName() === 'exception');
+
+    expect($spans)->toHaveCount(1)
+        ->and($spans[0]->getStatus()->getCode())->toBe(StatusCode::STATUS_UNSET)
+        ->and($spans[0]->getAttributes()->get('gen_ai.provider.name'))->toBe('openai')
+        ->and($failover?->getAttributes()->toArray())->toMatchArray([
+            'gen_ai.provider.name' => 'anthropic',
+            'gen_ai.request.model' => 'claude-sonnet-4-5',
+        ]);
 });

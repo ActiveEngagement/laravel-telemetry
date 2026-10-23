@@ -38,6 +38,17 @@ function exportedSpans(): array
     return array_values(app(SpanExporterInterface::class)->getStorage()->getArrayCopy());
 }
 
+/**
+ * @return list<ImmutableSpan>
+ */
+function aiSpans(string $operation): array
+{
+    return array_values(array_filter(
+        exportedSpans(),
+        fn (ImmutableSpan $span): bool => $span->getAttributes()->get('gen_ai.operation.name') === $operation,
+    ));
+}
+
 function rewatch(): void
 {
     app(Dispatcher::class)->forget(MessageLogged::class);

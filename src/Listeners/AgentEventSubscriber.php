@@ -2,11 +2,13 @@
 
 namespace Actengage\Telemetry\Listeners;
 
+use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
 use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Events\AgentFailed;
+use Laravel\Ai\Events\AgentFailedOver;
 use Laravel\Ai\Events\AgentPrompted;
 use Laravel\Ai\Events\AgentStreamed;
 use Laravel\Ai\Events\PromptingAgent;
@@ -17,6 +19,8 @@ use OpenTelemetry\API\Trace\TracerInterface;
 
 class AgentEventSubscriber
 {
+    use DescribesTokenUsage;
+
     public function __construct(
         protected TracerInterface $tracer,
         protected ActiveSpans $spans,
@@ -53,6 +57,14 @@ class AgentEventSubscriber
         $this->spans->fail($event->invocationId, $event->exception);
     }
 
+    public function failover(AgentFailedOver $event): void
+    {
+        $this->spans->get($event->invocationId)?->recordException($event->exception, [
+            'gen_ai.provider.name' => $event->provider->name(),
+            'gen_ai.request.model' => $event->model,
+        ]);
+    }
+
     /**
      * @return array<class-string, string>
      */
@@ -64,6 +76,7 @@ class AgentEventSubscriber
             AgentPrompted::class => 'end',
             AgentStreamed::class => 'end',
             AgentFailed::class => 'fail',
+            AgentFailedOver::class => 'failover',
         ];
     }
 
@@ -81,11 +94,7 @@ class AgentEventSubscriber
             'gen_ai.provider.name' => $response->meta->provider,
             'gen_ai.response.model' => $response->meta->model,
             'gen_ai.conversation.id' => $response->conversationId,
-            'gen_ai.usage.input_tokens' => $response->usage->inputTokens,
-            'gen_ai.usage.output_tokens' => $response->usage->outputTokens,
-            'gen_ai.usage.cache_read.input_tokens' => $response->usage->cacheReadInputTokens,
-            'gen_ai.usage.cache_creation.input_tokens' => $response->usage->cacheWriteInputTokens,
-            'gen_ai.usage.reasoning.output_tokens' => $response->usage->reasoningTokens,
+            ...$this->usageAttributes($response->usage),
         ], fn (int|string|null $value): bool => $value !== null);
     }
 }
