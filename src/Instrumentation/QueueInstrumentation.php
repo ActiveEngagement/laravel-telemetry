@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry\Instrumentation;
 
+use Override;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Queue\Events\Looping;
@@ -30,6 +31,7 @@ class QueueInstrumentation extends KeepsuitQueueInstrumentation
     /**
      * @param  array<mixed>  $options
      */
+    #[Override]
     public function register(array $options): void
     {
         parent::register($options);
@@ -53,6 +55,7 @@ class QueueInstrumentation extends KeepsuitQueueInstrumentation
         $span->end();
     }
 
+    #[Override]
     protected function finishActiveJobSpan(?Throwable $exception = null): void
     {
         if (! $exception instanceof Throwable) {

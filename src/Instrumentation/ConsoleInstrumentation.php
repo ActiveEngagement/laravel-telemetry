@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry\Instrumentation;
 
+use Override;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Str;
@@ -53,6 +54,7 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
     /**
      * @param  array{commands?: string[], excluded?: string[]}  $options
      */
+    #[Override]
     public function register(array $options): void
     {
         $this->excluded = [...static::EXCLUDED, ...array_values($options['excluded'] ?? [])];
@@ -62,6 +64,7 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
         $this->app->terminating($this->endFailedCommands(...));
     }
 
+    #[Override]
     public function commandFinished(CommandFinished $event): void
     {
         $trace = $this->startedCommands[$event->input] ?? null;
@@ -89,6 +92,7 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
         $this->failedCommands = [];
     }
 
+    #[Override]
     protected function shouldRecord(string $command): bool
     {
         return ! Str::is($this->excluded, $command);

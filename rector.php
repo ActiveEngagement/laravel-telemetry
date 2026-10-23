@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
+use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 use RectorLaravel\Rector\Class_\DescriptionPropertyToDescriptionAttributeRector;
 use RectorLaravel\Rector\Class_\SignaturePropertyToSignatureAttributeRector;
@@ -38,5 +39,6 @@ return RectorConfig::configure()
     ->withImportNames(removeUnusedImports: true)
     ->withRules([
         DeclareStrictTypesRector::class,
+        AddOverrideAttributeToOverriddenMethodsRector::class,
         SeparateMultiUseImportsRector::class,
     ]);

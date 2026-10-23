@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry;
 
+use Override;
 use ActiveEngagement\Telemetry\Console\HeartbeatCommand;
 use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
@@ -26,6 +27,7 @@ use OpenTelemetry\API\Common\Time\Clock;
 
 class TelemetryServiceProvider extends ServiceProvider
 {
+    #[Override]
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/telemetry.php', 'telemetry');
