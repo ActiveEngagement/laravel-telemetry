@@ -11,7 +11,7 @@ class EmbeddingsEventSubscriber extends ProviderEventSubscriber
 {
     public function start(GeneratingEmbeddings $event): void
     {
-        $this->startSpan('embeddings', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'embeddings', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(EmbeddingsGenerated $event): void

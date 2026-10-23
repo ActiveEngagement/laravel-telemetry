@@ -11,7 +11,7 @@ class ClassificationEventSubscriber extends ProviderEventSubscriber
 {
     public function start(Classifying $event): void
     {
-        $this->startSpan('classify', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'classify', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(Classified $event): void

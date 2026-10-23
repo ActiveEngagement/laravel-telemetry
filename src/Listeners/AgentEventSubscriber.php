@@ -2,9 +2,7 @@
 
 namespace Actengage\Telemetry\Listeners;
 
-use Actengage\Telemetry\Contracts\ContextResolver;
 use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
-use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -17,17 +15,10 @@ use Laravel\Ai\Events\PromptingAgent;
 use Laravel\Ai\Events\StreamingAgent;
 use Laravel\Ai\Responses\AgentResponse;
 use OpenTelemetry\API\Trace\SpanKind;
-use OpenTelemetry\API\Trace\TracerInterface;
 
-class AgentEventSubscriber
+class AgentEventSubscriber extends AiEventSubscriber
 {
     use DescribesTokenUsage;
-
-    public function __construct(
-        protected TracerInterface $tracer,
-        protected ActiveSpans $spans,
-        protected ContextResolver $contextResolver,
-    ) {}
 
     public function start(PromptingAgent $event): void
     {
@@ -35,20 +26,23 @@ class AgentEventSubscriber
             return;
         }
 
-        $agent = $this->agentName($event->prompt->agent);
+        $agent = $event->prompt->agent;
+        $attributes = $this->classAttributes($agent);
+        $name = $this->agentName($agent, $attributes);
 
-        $span = $this->tracer->spanBuilder('invoke_agent '.$agent)
+        $span = $this->tracer->spanBuilder('invoke_agent '.$name)
             ->setSpanKind(SpanKind::KIND_INTERNAL)
-            ->setAttributes([
+            ->setAttributes($this->withoutNulls([
                 'gen_ai.operation.name' => 'invoke_agent',
-                'gen_ai.agent.name' => $agent,
+                'gen_ai.agent.name' => $name,
                 'gen_ai.provider.name' => $event->prompt->provider->name(),
                 'gen_ai.request.model' => $event->prompt->model,
-                ...$this->contextResolver->userAttributes($this->participant($event->prompt->agent)),
-            ])
+                ...$this->contextResolver->userAttributes($this->participant($agent)),
+                ...$attributes,
+            ]))
             ->startSpan();
 
-        $this->spans->open($event->invocationId, $span);
+        $this->openSpan($event->invocationId, $span, $event);
     }
 
     public function end(AgentPrompted $event): void
@@ -71,9 +65,6 @@ class AgentEventSubscriber
         ]);
     }
 
-    /**
-     * @return array<class-string, string>
-     */
     public function subscribe(Dispatcher $events): array
     {
         return [
@@ -86,9 +77,14 @@ class AgentEventSubscriber
         ];
     }
 
-    protected function agentName(Agent $agent): string
+    /**
+     * @param  array<non-empty-string, bool|int|float|string|array<mixed>|null>  $attributes
+     */
+    protected function agentName(Agent $agent, array $attributes): string
     {
-        return class_basename($agent);
+        $name = $attributes['gen_ai.agent.name'] ?? null;
+
+        return is_string($name) && $name !== '' ? $name : class_basename($agent);
     }
 
     protected function participant(Agent $agent): ?Authenticatable
@@ -99,15 +95,15 @@ class AgentEventSubscriber
     }
 
     /**
-     * @return array<non-empty-string, int|string>
+     * @return array<non-empty-string, bool|int|float|string|array<mixed>>
      */
     protected function responseAttributes(AgentResponse $response): array
     {
-        return array_filter([
+        return $this->withoutNulls([
             'gen_ai.provider.name' => $response->meta->provider,
             'gen_ai.response.model' => $response->meta->model,
             'gen_ai.conversation.id' => $response->conversationId,
             ...$this->usageAttributes($response->usage),
-        ], fn (int|string|null $value): bool => $value !== null);
+        ]);
     }
 }

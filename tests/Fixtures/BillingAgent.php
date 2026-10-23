@@ -1,0 +1,16 @@
+<?php
+
+namespace Tests\Fixtures;
+
+use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
+
+class BillingAgent extends SupportAgent implements HasTelemetryAttributes
+{
+    public function telemetryAttributes(): array
+    {
+        return [
+            'gen_ai.agent.name' => 'billing',
+            'app.team' => 'finance',
+        ];
+    }
+}

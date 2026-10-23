@@ -18,7 +18,7 @@ class StoreEventSubscriber extends ProviderEventSubscriber
 {
     public function creating(CreatingStore $event): void
     {
-        $this->startSpan('store.create', $event->invocationId, $event->provider, attributes: [
+        $this->startSpan($event, 'store.create', $event->invocationId, $event->provider, attributes: [
             'laravel.ai.store.name' => $event->name,
         ]);
     }
@@ -35,7 +35,7 @@ class StoreEventSubscriber extends ProviderEventSubscriber
 
     public function addingFile(AddingFileToStore $event): void
     {
-        $this->startSpan('store.add_file', $event->invocationId, $event->provider, attributes: [
+        $this->startSpan($event, 'store.add_file', $event->invocationId, $event->provider, attributes: [
             'gen_ai.data_source.id' => $event->storeId,
             'laravel.ai.file.id' => $event->fileId,
         ]);
@@ -53,7 +53,7 @@ class StoreEventSubscriber extends ProviderEventSubscriber
 
     public function removingFile(RemovingFileFromStore $event): void
     {
-        $this->startSpan('store.remove_file', $event->invocationId, $event->provider, attributes: [
+        $this->startSpan($event, 'store.remove_file', $event->invocationId, $event->provider, attributes: [
             'gen_ai.data_source.id' => $event->storeId,
             'laravel.ai.document.id' => $event->documentId,
         ]);
@@ -71,7 +71,7 @@ class StoreEventSubscriber extends ProviderEventSubscriber
 
     public function deleted(StoreDeleted $event): void
     {
-        $this->recordSpan('store.delete', $event->invocationId, $event->provider, [
+        $this->recordSpan($event, 'store.delete', $event->invocationId, $event->provider, [
             'gen_ai.data_source.id' => $event->storeId,
         ]);
     }

@@ -11,7 +11,7 @@ class RerankingEventSubscriber extends ProviderEventSubscriber
 {
     public function start(Reranking $event): void
     {
-        $this->startSpan('rerank', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'rerank', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(Reranked $event): void

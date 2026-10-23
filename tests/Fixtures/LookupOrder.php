@@ -2,12 +2,13 @@
 
 namespace Tests\Fixtures;
 
+use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;
 use RuntimeException;
 
-class LookupOrder implements Tool
+class LookupOrder implements HasTelemetryAttributes, Tool
 {
     public function description(): string
     {
@@ -21,6 +22,11 @@ class LookupOrder implements Tool
         }
 
         return 'The order has shipped.';
+    }
+
+    public function telemetryAttributes(): array
+    {
+        return ['app.domain' => 'orders'];
     }
 
     public function schema(JsonSchema $schema): array

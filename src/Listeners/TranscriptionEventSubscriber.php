@@ -11,7 +11,7 @@ class TranscriptionEventSubscriber extends ProviderEventSubscriber
 {
     public function start(GeneratingTranscription $event): void
     {
-        $this->startSpan('transcription', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'transcription', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(TranscriptionGenerated $event): void

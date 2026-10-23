@@ -11,7 +11,7 @@ class AudioEventSubscriber extends ProviderEventSubscriber
 {
     public function start(GeneratingAudio $event): void
     {
-        $this->startSpan('generate_audio', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'generate_audio', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(AudioGenerated $event): void

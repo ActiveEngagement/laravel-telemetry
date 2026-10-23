@@ -12,7 +12,7 @@ class FileEventSubscriber extends ProviderEventSubscriber
 {
     public function storing(StoringFile $event): void
     {
-        $this->startSpan('file.store', $event->invocationId, $event->provider);
+        $this->startSpan($event, 'file.store', $event->invocationId, $event->provider);
     }
 
     public function stored(FileStored $event): void
@@ -27,7 +27,7 @@ class FileEventSubscriber extends ProviderEventSubscriber
 
     public function deleted(FileDeleted $event): void
     {
-        $this->recordSpan('file.delete', $event->invocationId, $event->provider, [
+        $this->recordSpan($event, 'file.delete', $event->invocationId, $event->provider, [
             'laravel.ai.file.id' => $event->fileId,
         ]);
     }

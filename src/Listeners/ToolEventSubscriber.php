@@ -2,7 +2,6 @@
 
 namespace Actengage\Telemetry\Listeners;
 
-use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use Laravel\Ai\Events\InvokingTool;
@@ -10,15 +9,9 @@ use Laravel\Ai\Events\ToolFailed;
 use Laravel\Ai\Events\ToolInvoked;
 use Laravel\Ai\Tools\ToolNameResolver;
 use OpenTelemetry\API\Trace\SpanKind;
-use OpenTelemetry\API\Trace\TracerInterface;
 
-class ToolEventSubscriber
+class ToolEventSubscriber extends AiEventSubscriber
 {
-    public function __construct(
-        protected TracerInterface $tracer,
-        protected ActiveSpans $spans,
-    ) {}
-
     public function start(InvokingTool $event): void
     {
         if (! Telemetry::isRecording()) {
@@ -29,11 +22,14 @@ class ToolEventSubscriber
 
         $span = $this->tracer->spanBuilder('execute_tool '.$tool)
             ->setSpanKind(SpanKind::KIND_INTERNAL)
-            ->setAttribute('gen_ai.operation.name', 'execute_tool')
-            ->setAttribute('gen_ai.tool.name', $tool)
+            ->setAttributes($this->withoutNulls([
+                'gen_ai.operation.name' => 'execute_tool',
+                'gen_ai.tool.name' => $tool,
+                ...$this->classAttributes($event->tool),
+            ]))
             ->startSpan();
 
-        $this->spans->open($event->toolInvocationId, $span);
+        $this->openSpan($event->toolInvocationId, $span, $event);
     }
 
     public function end(ToolInvoked $event): void
@@ -46,9 +42,6 @@ class ToolEventSubscriber
         $this->spans->fail($event->toolInvocationId, $event->exception);
     }
 
-    /**
-     * @return array<class-string, string>
-     */
     public function subscribe(Dispatcher $events): array
     {
         return [

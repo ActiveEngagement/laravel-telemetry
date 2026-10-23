@@ -11,7 +11,7 @@ class ImageEventSubscriber extends ProviderEventSubscriber
 {
     public function start(GeneratingImage $event): void
     {
-        $this->startSpan('generate_image', $event->invocationId, $event->provider, $event->model);
+        $this->startSpan($event, 'generate_image', $event->invocationId, $event->provider, $event->model);
     }
 
     public function end(ImageGenerated $event): void
