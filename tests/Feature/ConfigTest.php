@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\TelemetryServiceProvider;
+use ActiveEngagement\Telemetry\TelemetryServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 it('publishes the config file', function (): void {

@@ -1,9 +1,9 @@
 <?php
 
-use Actengage\Telemetry\Events\HeartbeatRecorded;
-use Actengage\Telemetry\Jobs\RecordQueueHeartbeat;
-use Actengage\Telemetry\Support\Heartbeat;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Events\HeartbeatRecorded;
+use ActiveEngagement\Telemetry\Jobs\RecordQueueHeartbeat;
+use ActiveEngagement\Telemetry\Support\Heartbeat;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Event;

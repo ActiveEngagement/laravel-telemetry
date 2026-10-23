@@ -1,9 +1,9 @@
 <?php
 
-namespace Actengage\Telemetry\Watchers;
+namespace ActiveEngagement\Telemetry\Watchers;
 
-use Actengage\Telemetry\Listeners;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Listeners;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 

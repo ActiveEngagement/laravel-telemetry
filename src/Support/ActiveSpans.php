@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Support;
+namespace ActiveEngagement\Telemetry\Support;
 
 use OpenTelemetry\API\Trace\SpanInterface;
 use OpenTelemetry\API\Trace\StatusCode;

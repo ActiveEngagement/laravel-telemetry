@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry;
+namespace ActiveEngagement\Telemetry;
 
 use Laravel\Ai\Events\PromptingAgent;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;

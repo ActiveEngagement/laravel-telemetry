@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use OpenTelemetry\API\Trace\Span;
 use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\API\Trace\TracerInterface;

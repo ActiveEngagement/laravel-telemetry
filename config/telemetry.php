@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Watchers;
+use ActiveEngagement\Telemetry\Watchers;
 
 return [
     'enabled' => env('TELEMETRY_ENABLED', true),

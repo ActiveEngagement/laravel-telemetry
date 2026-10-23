@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
 use Laravel\Ai\Events\ClassificationFailed;
 use Laravel\Ai\Events\Classified;

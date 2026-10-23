@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\TelemetryServiceProvider;
+use ActiveEngagement\Telemetry\TelemetryServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 
 it('loads the telemetry service provider', function (): void {

@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Watchers\LogWatcher;
+use ActiveEngagement\Telemetry\Watchers\LogWatcher;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;

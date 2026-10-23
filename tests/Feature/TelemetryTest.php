@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Support\Facades\Log;
 
 it('starts recording when telemetry is enabled', function (): void {

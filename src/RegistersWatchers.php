@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry;
+namespace ActiveEngagement\Telemetry;
 
-use Actengage\Telemetry\Watchers\Watcher;
+use ActiveEngagement\Telemetry\Watchers\Watcher;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;

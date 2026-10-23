@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Support\WallClock;
+use ActiveEngagement\Telemetry\Support\WallClock;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Log;
 use OpenTelemetry\API\Common\Time\Clock;

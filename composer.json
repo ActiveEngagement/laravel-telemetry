@@ -1,5 +1,5 @@
 {
-  "name": "actengage/laravel-telemetry",
+  "name": "activeengagement/laravel-telemetry",
   "description": "Shared OpenTelemetry setup for AE Laravel apps",
   "type": "library",
   "license": "proprietary",
@@ -29,7 +29,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Actengage\\Telemetry\\": "src/"
+      "ActiveEngagement\\Telemetry\\": "src/"
     }
   },
   "autoload-dev": {
@@ -40,7 +40,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Actengage\\Telemetry\\TelemetryServiceProvider"
+        "ActiveEngagement\\Telemetry\\TelemetryServiceProvider"
       ]
     }
   },

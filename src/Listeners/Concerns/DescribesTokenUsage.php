@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners\Concerns;
+namespace ActiveEngagement\Telemetry\Listeners\Concerns;
 
 use Laravel\Ai\Responses\Data\TextUsage;
 use Laravel\Ai\Responses\Data\Usage;

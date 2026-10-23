@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Watchers;
+namespace ActiveEngagement\Telemetry\Watchers;
 
 use Illuminate\Contracts\Foundation\Application;
 

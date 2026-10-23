@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Contracts;
+namespace ActiveEngagement\Telemetry\Contracts;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Log\Context\Repository as ContextRepository;

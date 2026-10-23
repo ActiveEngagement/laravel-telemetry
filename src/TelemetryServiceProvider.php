@@ -1,15 +1,15 @@
 <?php
 
-namespace Actengage\Telemetry;
+namespace ActiveEngagement\Telemetry;
 
-use Actengage\Telemetry\Console\HeartbeatCommand;
-use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Instrumentation\ConsoleInstrumentation;
-use Actengage\Telemetry\Instrumentation\QueueInstrumentation;
-use Actengage\Telemetry\Support\ActiveSpans;
-use Actengage\Telemetry\Support\KeepsuitContextResolver;
-use Actengage\Telemetry\Support\WallClock;
+use ActiveEngagement\Telemetry\Console\HeartbeatCommand;
+use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
+use ActiveEngagement\Telemetry\Instrumentation\QueueInstrumentation;
+use ActiveEngagement\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
+use ActiveEngagement\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Log\Context\Repository as ContextRepository;

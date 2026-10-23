@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Contracts;
+namespace ActiveEngagement\Telemetry\Contracts;
 
 interface HasTelemetryAttributes
 {

@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Support\KeepsuitContextResolver;
+use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
 use Illuminate\Support\Facades\Context;
 use Laravel\Ai\Audio;
 use Laravel\Ai\Classification;

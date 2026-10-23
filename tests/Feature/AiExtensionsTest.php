@@ -1,7 +1,7 @@
 <?php
 
-use Actengage\Telemetry\Events\AiSpanStarted;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Events\AiSpanStarted;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Support\Facades\Event;
 use Laravel\Ai\Embeddings;
 use Laravel\Ai\Events\GeneratingEmbeddings;

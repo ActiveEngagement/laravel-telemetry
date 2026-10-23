@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures;
 
-use Actengage\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use OpenTelemetry\API\Trace\TracerInterface;

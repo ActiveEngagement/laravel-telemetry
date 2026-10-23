@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Instrumentation;
+namespace ActiveEngagement\Telemetry\Instrumentation;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;

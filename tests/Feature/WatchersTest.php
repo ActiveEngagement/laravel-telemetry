@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Watchers\LogWatcher;
+use ActiveEngagement\Telemetry\Watchers\LogWatcher;
 use Illuminate\Support\Facades\Log;
 
 it('registers no watchers when TELEMETRY_ENABLED is false', function (): void {

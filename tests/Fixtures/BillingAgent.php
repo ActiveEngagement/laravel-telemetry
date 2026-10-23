@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures;
 
-use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
+use ActiveEngagement\Telemetry\Contracts\HasTelemetryAttributes;
 
 class BillingAgent extends SupportAgent implements HasTelemetryAttributes
 {

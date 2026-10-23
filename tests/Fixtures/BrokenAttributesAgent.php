@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures;
 
-use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
+use ActiveEngagement\Telemetry\Contracts\HasTelemetryAttributes;
 use RuntimeException;
 
 class BrokenAttributesAgent extends SupportAgent implements HasTelemetryAttributes

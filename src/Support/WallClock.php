@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Support;
+namespace ActiveEngagement\Telemetry\Support;
 
 use Carbon\CarbonImmutable;
 use OpenTelemetry\API\Common\Time\ClockInterface;

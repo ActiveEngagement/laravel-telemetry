@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Instrumentation\ConsoleInstrumentation;
+use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Facades\Artisan;

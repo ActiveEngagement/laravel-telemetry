@@ -1,7 +1,7 @@
 <?php
 
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Support\KeepsuitContextResolver;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Context;

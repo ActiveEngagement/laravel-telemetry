@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Logging;
+namespace ActiveEngagement\Telemetry\Logging;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Log\Logger;

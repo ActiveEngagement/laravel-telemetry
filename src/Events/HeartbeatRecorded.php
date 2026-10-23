@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Events;
+namespace ActiveEngagement\Telemetry\Events;
 
 class HeartbeatRecorded
 {

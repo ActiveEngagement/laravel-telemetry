@@ -1,9 +1,9 @@
 <?php
 
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Logging\SendToOpenTelemetry;
-use Actengage\Telemetry\Telemetry;
-use Actengage\Telemetry\Watchers\LogWatcher;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
+use ActiveEngagement\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Watchers\LogWatcher;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Log\Context\Repository as ContextRepository;

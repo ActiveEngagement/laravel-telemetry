@@ -1,11 +1,11 @@
 <?php
 
-namespace Actengage\Telemetry\Watchers;
+namespace ActiveEngagement\Telemetry\Watchers;
 
-use Actengage\Telemetry\Console\HeartbeatCommand;
-use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
-use Actengage\Telemetry\Jobs\RecordQueueHeartbeat;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Console\HeartbeatCommand;
+use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
+use ActiveEngagement\Telemetry\Jobs\RecordQueueHeartbeat;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;

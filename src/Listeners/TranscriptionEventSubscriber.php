@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
 use Laravel\Ai\Events\GeneratingTranscription;
 use Laravel\Ai\Events\TranscriptionFailed;

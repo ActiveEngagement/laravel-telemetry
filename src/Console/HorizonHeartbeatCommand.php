@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry\Console;
+namespace ActiveEngagement\Telemetry\Console;
 
-use Actengage\Telemetry\Support\Heartbeat;
+use ActiveEngagement\Telemetry\Support\Heartbeat;
 use Illuminate\Console\Command;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 use Throwable;

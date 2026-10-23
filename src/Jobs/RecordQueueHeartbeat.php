@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry\Jobs;
+namespace ActiveEngagement\Telemetry\Jobs;
 
-use Actengage\Telemetry\Support\Heartbeat;
+use ActiveEngagement\Telemetry\Support\Heartbeat;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

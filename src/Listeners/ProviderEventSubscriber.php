@@ -1,9 +1,9 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
-use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Listeners\Concerns\DescribesTokenUsage;
+use ActiveEngagement\Telemetry\Telemetry;
 use Laravel\Ai\Providers\Provider;
 use Laravel\Ai\Responses\Data\Meta;
 use Laravel\Ai\Responses\Data\Usage;

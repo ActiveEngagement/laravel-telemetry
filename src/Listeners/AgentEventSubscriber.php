@@ -1,9 +1,9 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
-use Actengage\Telemetry\Listeners\Concerns\DescribesTokenUsage;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Listeners\Concerns\DescribesTokenUsage;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Events\AgentFailed;

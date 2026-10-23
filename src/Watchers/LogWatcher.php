@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry\Watchers;
+namespace ActiveEngagement\Telemetry\Watchers;
 
-use Actengage\Telemetry\Logging\SendToOpenTelemetry;
+use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Log\LogManager;

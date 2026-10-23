@@ -1,11 +1,11 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
-use Actengage\Telemetry\Events\AiSpanStarted;
-use Actengage\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Contracts\HasTelemetryAttributes;
+use ActiveEngagement\Telemetry\Events\AiSpanStarted;
+use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use OpenTelemetry\API\Trace\SpanInterface;

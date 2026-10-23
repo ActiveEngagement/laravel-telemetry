@@ -1,6 +1,6 @@
 <?php
 
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Collection;
 use Laravel\Ai\Exceptions\ProviderOverloadedException;

@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Actengage\Telemetry\TelemetryServiceProvider;
+use ActiveEngagement\Telemetry\TelemetryServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 use Laravel\Ai\AiServiceProvider;
 use Monolog\Handler\NullHandler;

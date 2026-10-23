@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry\Support;
+namespace ActiveEngagement\Telemetry\Support;
 
-use Actengage\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Log\Context\Repository as ContextRepository;

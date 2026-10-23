@@ -1,8 +1,8 @@
 <?php
 
-namespace Actengage\Telemetry\Listeners;
+namespace ActiveEngagement\Telemetry\Listeners;
 
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Telemetry;
 use Laravel\Ai\Events\InvokingTool;
 use Laravel\Ai\Events\ToolFailed;
 use Laravel\Ai\Events\ToolInvoked;

@@ -1,7 +1,7 @@
 <?php
 
-use Actengage\Telemetry\Events\AiSpanStarted;
-use Actengage\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Events\AiSpanStarted;
+use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use OpenTelemetry\API\Trace\StatusCode;

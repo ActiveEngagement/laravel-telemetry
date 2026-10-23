@@ -1,9 +1,9 @@
 <?php
 
-namespace Actengage\Telemetry\Logging;
+namespace ActiveEngagement\Telemetry\Logging;
 
-use Actengage\Telemetry\Contracts\ContextResolver;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Contracts\ContextResolver;
+use ActiveEngagement\Telemetry\Telemetry;
 use Monolog\Handler\AbstractHandler;
 use Monolog\Level;
 use Monolog\LogRecord;

@@ -1,7 +1,7 @@
 <?php
 
-use Actengage\Telemetry\Logging\SendToOpenTelemetry;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry;
+use ActiveEngagement\Telemetry\Telemetry;
 use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use OpenTelemetry\SDK\Common\Export\InMemoryStorageManager;
 use OpenTelemetry\SDK\Logs\LogRecordExporterInterface;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Actengage\Telemetry\Support;
+namespace ActiveEngagement\Telemetry\Support;
 
-use Actengage\Telemetry\Events\HeartbeatRecorded;
-use Actengage\Telemetry\Telemetry;
+use ActiveEngagement\Telemetry\Events\HeartbeatRecorded;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use OpenTelemetry\API\Common\Time\Clock;
 use OpenTelemetry\API\Logs\LoggerInterface;

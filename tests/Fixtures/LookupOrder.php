@@ -2,7 +2,7 @@
 
 namespace Tests\Fixtures;
 
-use Actengage\Telemetry\Contracts\HasTelemetryAttributes;
+use ActiveEngagement\Telemetry\Contracts\HasTelemetryAttributes;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Tools\Request;

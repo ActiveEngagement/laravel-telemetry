@@ -1,6 +1,6 @@
 <?php
 
-namespace Actengage\Telemetry\Instrumentation;
+namespace ActiveEngagement\Telemetry\Instrumentation;
 
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Foundation\Application;
