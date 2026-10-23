@@ -95,7 +95,10 @@ Add to the app's `phpunit.xml`:
 ## Development
 
 ```bash
-composer test
-composer test:types
-composer test:refactor
+composer qa          # fix code style, then run every check
+composer lint        # Rector and Pint
+composer test        # tests, code style and types
+composer test:unit   # Pest
+composer test:lint   # Pint and Rector, without changes
+composer test:types  # PHPStan
 ```

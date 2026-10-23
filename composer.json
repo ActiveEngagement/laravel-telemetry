@@ -48,10 +48,25 @@
     }
   },
   "scripts": {
-    "refactor": "rector",
-    "test": "pest",
-    "test:refactor": "rector --dry-run",
-    "test:types": "phpstan"
+    "lint": [
+      "@php vendor/bin/rector",
+      "@php vendor/bin/pint --parallel"
+    ],
+    "test:lint": [
+      "@php vendor/bin/pint --parallel --test",
+      "@php vendor/bin/rector --dry-run"
+    ],
+    "test:types": "@php vendor/bin/phpstan",
+    "test:unit": "@php vendor/bin/pest",
+    "test": [
+      "@test:unit",
+      "@test:lint",
+      "@test:types"
+    ],
+    "qa": [
+      "@lint",
+      "@test"
+    ]
   },
   "config": {
     "sort-packages": true,

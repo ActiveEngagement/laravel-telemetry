@@ -33,5 +33,5 @@ jobs:
       - name: Execute type checking
         run: composer test:types
 
-      - name: Check Rector
-        run: composer test:refactor
+      - name: Check code style
+        run: composer test:lint
