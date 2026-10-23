@@ -18,6 +18,8 @@ composer require activeengagement/laravel-telemetry
 
 Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default.
 
+To install the agent skill, run `php artisan boost:install` and select `activeengagement/laravel-telemetry`.
+
 ## Environment
 
 ```ini
