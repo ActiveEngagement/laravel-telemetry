@@ -6,6 +6,8 @@ return [
     'enabled' => env('TELEMETRY_ENABLED', true),
 
     'watchers' => [
+        Watchers\AiWatcher::class => env('TELEMETRY_AI_WATCHER', true),
+
         Watchers\HeartbeatWatcher::class => [
             'scheduler' => env('TELEMETRY_SCHEDULER_HEARTBEAT', true),
 

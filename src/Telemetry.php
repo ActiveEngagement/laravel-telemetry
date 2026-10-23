@@ -2,6 +2,7 @@
 
 namespace Actengage\Telemetry;
 
+use Laravel\Ai\Events\PromptingAgent;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 
 class Telemetry
@@ -28,6 +29,11 @@ class Telemetry
     public static function isHorizonInstalled(): bool
     {
         return interface_exists(MasterSupervisorRepository::class);
+    }
+
+    public static function isAiInstalled(): bool
+    {
+        return class_exists(PromptingAgent::class);
     }
 
     /**

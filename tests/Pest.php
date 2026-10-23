@@ -7,6 +7,8 @@ use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use OpenTelemetry\SDK\Common\Export\InMemoryStorageManager;
 use OpenTelemetry\SDK\Logs\LogRecordExporterInterface;
 use OpenTelemetry\SDK\Logs\ReadableLogRecord;
+use OpenTelemetry\SDK\Trace\ImmutableSpan;
+use OpenTelemetry\SDK\Trace\SpanExporterInterface;
 use Tests\TestCase;
 
 pest()->extend(TestCase::class)
@@ -24,6 +26,16 @@ function exportedLogs(): array
     OpenTelemetry::flush();
 
     return array_values(app(LogRecordExporterInterface::class)->getStorage()->getArrayCopy());
+}
+
+/**
+ * @return list<ImmutableSpan>
+ */
+function exportedSpans(): array
+{
+    OpenTelemetry::flush();
+
+    return array_values(app(SpanExporterInterface::class)->getStorage()->getArrayCopy());
 }
 
 function rewatch(): void
