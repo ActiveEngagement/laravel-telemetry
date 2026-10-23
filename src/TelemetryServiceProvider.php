@@ -5,6 +5,7 @@ namespace Actengage\Telemetry;
 use Actengage\Telemetry\Console\HeartbeatCommand;
 use Actengage\Telemetry\Console\HorizonHeartbeatCommand;
 use Actengage\Telemetry\Contracts\ContextResolver;
+use Actengage\Telemetry\Support\ActiveSpans;
 use Actengage\Telemetry\Support\KeepsuitContextResolver;
 use Actengage\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
@@ -18,6 +19,7 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/telemetry.php', 'telemetry');
 
         $this->app->singleton(ContextResolver::class, KeepsuitContextResolver::class);
+        $this->app->singleton(ActiveSpans::class);
     }
 
     public function boot(Repository $config): void

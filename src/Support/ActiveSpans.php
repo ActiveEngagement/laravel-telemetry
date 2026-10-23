@@ -3,6 +3,8 @@
 namespace Actengage\Telemetry\Support;
 
 use OpenTelemetry\API\Trace\SpanInterface;
+use OpenTelemetry\API\Trace\StatusCode;
+use Throwable;
 
 class ActiveSpans
 {
@@ -30,6 +32,14 @@ class ActiveSpans
         $this->abandonOpenedAfter($key);
 
         return array_pop($this->spans)?->close();
+    }
+
+    public function fail(string $key, Throwable $exception): void
+    {
+        $this->close($key)
+            ?->recordException($exception)
+            ->setStatus(StatusCode::STATUS_ERROR, $exception->getMessage())
+            ->end();
     }
 
     protected function abandonOpenedAfter(string $key): void

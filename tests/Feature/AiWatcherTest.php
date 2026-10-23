@@ -4,6 +4,7 @@ use Actengage\Telemetry\Telemetry;
 use Laravel\Ai\Responses\AgentResponse;
 use Laravel\Ai\Responses\Data\Meta;
 use Laravel\Ai\Responses\Data\TextUsage;
+use Laravel\Ai\Responses\Data\ToolCall;
 use Laravel\Ai\Responses\TextResponse;
 use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\API\Trace\StatusCode;
@@ -15,11 +16,11 @@ use Tests\Fixtures\SupportAgent;
 /**
  * @return list<ImmutableSpan>
  */
-function agentSpans(): array
+function aiSpans(string $operation): array
 {
     return array_values(array_filter(
         exportedSpans(),
-        fn (ImmutableSpan $span): bool => str_starts_with($span->getName(), 'invoke_agent'),
+        fn (ImmutableSpan $span): bool => $span->getAttributes()->get('gen_ai.operation.name') === $operation,
     ));
 }
 
@@ -30,7 +31,7 @@ it('traces an agent prompt', function (): void {
 
     new SupportAgent()->prompt('Hi', provider: 'anthropic', model: 'claude-sonnet-4-5');
 
-    $spans = agentSpans();
+    $spans = aiSpans('invoke_agent');
 
     expect($spans)->toHaveCount(1)
         ->and($spans[0]->getName())->toBe('invoke_agent SupportAgent')
@@ -56,7 +57,7 @@ it('leaves out token counts that the provider does not report', function (): voi
 
     new SupportAgent()->prompt('Hi');
 
-    expect(agentSpans()[0]->getAttributes()->toArray())
+    expect(aiSpans('invoke_agent')[0]->getAttributes()->toArray())
         ->toHaveKeys(['gen_ai.usage.input_tokens', 'gen_ai.usage.output_tokens'])
         ->not->toHaveKeys([
             'gen_ai.usage.cache_read.input_tokens',
@@ -70,7 +71,7 @@ it('traces a streamed agent prompt once', function (): void {
 
     iterator_to_array(new SupportAgent()->stream('Hi'), false);
 
-    expect(agentSpans())->toHaveCount(1);
+    expect(aiSpans('invoke_agent'))->toHaveCount(1);
 });
 
 it('records a failed agent prompt', function (): void {
@@ -78,7 +79,7 @@ it('records a failed agent prompt', function (): void {
 
     expect(fn (): AgentResponse => new SupportAgent()->prompt('Hi'))->toThrow(RuntimeException::class);
 
-    $span = agentSpans()[0];
+    $span = aiSpans('invoke_agent')[0];
     $events = array_map(fn (EventInterface $event): string => $event->getName(), $span->getEvents());
 
     expect($span->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
@@ -106,7 +107,7 @@ it('records nothing while recording is stopped', function (): void {
 
     new SupportAgent()->prompt('Hi');
 
-    expect(agentSpans())->toBeEmpty();
+    expect(aiSpans('invoke_agent'))->toBeEmpty();
 });
 
 it('can be turned off with TELEMETRY_AI_WATCHER', function (): void {
@@ -115,5 +116,33 @@ it('can be turned off with TELEMETRY_AI_WATCHER', function (): void {
 
     new SupportAgent()->prompt('Hi');
 
-    expect(agentSpans())->toBeEmpty();
+    expect(aiSpans('invoke_agent'))->toBeEmpty();
+});
+
+it('traces a tool call inside the agent span', function (): void {
+    SupportAgent::fake([new ToolCall('call_1', 'LookupOrder', ['id' => 7]), 'It has shipped.']);
+
+    new SupportAgent()->prompt('Where is order 7?');
+
+    $tools = aiSpans('execute_tool');
+
+    expect($tools)->toHaveCount(1)
+        ->and($tools[0]->getName())->toBe('execute_tool LookupOrder')
+        ->and($tools[0]->getKind())->toBe(SpanKind::KIND_INTERNAL)
+        ->and($tools[0]->getAttributes()->toArray())->toMatchArray([
+            'gen_ai.operation.name' => 'execute_tool',
+            'gen_ai.tool.name' => 'LookupOrder',
+        ])
+        ->and($tools[0]->getParentSpanId())->toBe(aiSpans('invoke_agent')[0]->getSpanId());
+});
+
+it('records a failed tool call', function (): void {
+    SupportAgent::fake([new ToolCall('call_1', 'LookupOrder', ['id' => 0]), 'Sorry.']);
+
+    expect(fn (): AgentResponse => new SupportAgent()->prompt('Where is order 0?'))->toThrow(RuntimeException::class);
+
+    $tool = aiSpans('execute_tool')[0];
+
+    expect($tool->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
+        ->and($tool->getStatus()->getDescription())->toBe('The order does not exist.');
 });
