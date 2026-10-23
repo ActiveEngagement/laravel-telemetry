@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use OpenTelemetry\API\Trace\StatusCode;
+use OpenTelemetry\SDK\Logs\ReadableLogRecord;
+use OpenTelemetry\SDK\Trace\EventInterface;
 use OpenTelemetry\SDK\Trace\ImmutableSpan;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -51,6 +53,7 @@ it('marks a failed command as an error', function (): void {
     Artisan::command('reports:send', fn (): int => 1);
 
     $this->artisan('reports:send')->assertFailed();
+    $this->app->terminate();
 
     expect(commandSpan('reports:send')?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR);
 });
@@ -63,7 +66,7 @@ it('does not trace long-running and heartbeat commands', function (string $comma
     expect(commandSpan($command))->toBeNull();
 })->with(['horizon:work', 'octane:start', 'pulse:work', 'telemetry:heartbeat']);
 
-it('marks a command that throws as an error', function (): void {
+it('links an exception in a command to its span', function (): void {
     Artisan::command('reports:send', fn () => throw new RuntimeException('The mail server is down.'));
 
     try {
@@ -72,5 +75,14 @@ it('marks a command that throws as an error', function (): void {
         $this->app->make(ExceptionHandler::class)->report($runtimeException);
     }
 
-    expect(commandSpan('reports:send')?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR);
+    $this->app->terminate();
+
+    $span = commandSpan('reports:send');
+    $log = collect(exportedLogs())->first(fn (ReadableLogRecord $log): bool => $log->getBody() === 'The mail server is down.');
+    $exceptions = collect($span?->getEvents() ?? [])->filter(fn (EventInterface $event): bool => $event->getName() === 'exception');
+
+    expect($span?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
+        ->and($exceptions)->toHaveCount(1)
+        ->and($log?->getSpanContext()->getTraceId())->toBe($span?->getTraceId())
+        ->and($log?->getSpanContext()->getSpanId())->toBe($span?->getSpanId());
 });

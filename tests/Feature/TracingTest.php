@@ -65,10 +65,23 @@ it('records an exception in a queued job on the job span', function (): void {
 
     dispatch(new ImportOrders);
     $this->artisan('queue:work', ['--once' => true, '--stop-when-empty' => true]);
+    $this->app->terminate();
 
     $span = spanOfKind(SpanKind::KIND_CONSUMER);
 
     expect($span?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
-        ->and(recordedExceptions($span))->toContain('The import failed.')
-        ->and(logWithBody('importing orders')?->getSpanContext()->getTraceId())->toBe($span?->getTraceId());
+        ->and(recordedExceptions($span))->toBe(['The import failed.'])
+        ->and(logWithBody('importing orders')?->getSpanContext()->getTraceId())->toBe($span?->getTraceId())
+        ->and(logWithBody('The import failed.')?->getSpanContext()->getTraceId())->toBe($span?->getTraceId());
+});
+
+it('ends a failed job span when the worker stops', function (): void {
+    $this->loadLaravelMigrations();
+    config()->set(['queue.default' => 'database', 'queue.failed.driver' => 'null']);
+
+    dispatch(new ImportOrders);
+    $this->artisan('queue:work', ['--max-jobs' => 1, '--stop-when-empty' => true]);
+
+    expect(spanOfKind(SpanKind::KIND_CONSUMER)?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
+        ->and(logWithBody('The import failed.')?->getSpanContext()->getTraceId())->toBe(spanOfKind(SpanKind::KIND_CONSUMER)?->getTraceId());
 });
