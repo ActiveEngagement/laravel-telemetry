@@ -41,7 +41,23 @@ it('moves the unreleased entries into the release', function (): void {
     $result = changelog('release', '0.3.0', '2026-11-02');
 
     expect($result->errorOutput())->toBe('')
+        ->and($result->output())->toBe("0.3.0\n")
         ->and(File::get($this->directory.'/CHANGELOG.md'))->toBe(File::get(__DIR__.'/../Fixtures/CHANGELOG-0.3.0.md'));
+});
+
+it('releases the next version after the latest release', function (string $type, string $version): void {
+    $result = changelog('release', $type, '2026-11-02');
+
+    expect($result->output())->toBe("{$version}\n")
+        ->and(File::get($this->directory.'/CHANGELOG.md'))->toContain("## [{$version}] - 2026-11-02\n\n### Added\n\n- Record the queue wait time.");
+})->with([
+    ['patch', '0.2.1'],
+    ['minor', '0.3.0'],
+    ['major', '1.0.0'],
+]);
+
+it('prints the latest release', function (): void {
+    expect(changelog('latest')->output())->toBe("0.2.0\n");
 });
 
 it('prints the entries of a release', function (): void {

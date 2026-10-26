@@ -40,3 +40,16 @@ jobs:
 
       - name: Execute tests
         run: composer test:unit
+
+  # The required check. It does not change when the matrix changes.
+  tests-passed:
+    name: Tests
+    needs: tests
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Require passing tests
+        env:
+          RESULT: ${{ needs.tests.result }}
+        run: test "$RESULT" = success

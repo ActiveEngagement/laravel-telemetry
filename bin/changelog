@@ -5,7 +5,7 @@ changelog=CHANGELOG.md
 repository=https://github.com/ActiveEngagement/laravel-telemetry
 
 usage() {
-  echo "usage: bin/changelog check | release <version> [<date>] | notes <version>" >&2
+  echo "usage: bin/changelog check | latest | notes <version> | release <version|major|minor|patch> [<date>]" >&2
   exit 1
 }
 
@@ -33,6 +33,22 @@ EOF
 
 versions() {
   sed -nE 's/^## \[([0-9]+\.[0-9]+\.[0-9]+)\] - .*/\1/p' "$changelog"
+}
+
+latest() {
+  versions | awk 'NR == 1'
+}
+
+next_version() {
+  local major minor patch
+  IFS=. read -r major minor patch <<< "$(latest)"
+
+  case $1 in
+    major) echo "$((major + 1)).0.0" ;;
+    minor) echo "$major.$((minor + 1)).0" ;;
+    patch) echo "$major.$minor.$((patch + 1))" ;;
+    *) echo "$1" ;;
+  esac
 }
 
 links() {
@@ -176,8 +192,9 @@ notes() {
 }
 
 release() {
-  local version=$1 date=$2 entries updated_links
+  local version date=$2 entries updated_links
 
+  version=$(next_version "$1")
   [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || usage
   check
 
@@ -192,12 +209,14 @@ release() {
   printf '\n%s\n' "$updated_links" >> "$changelog"
 
   check
+  echo "$version"
 }
 
 [[ -f $changelog ]] || fail "$changelog does not exist."
 
 case "${1:-}" in
   check) check ;;
+  latest) latest ;;
   release) release "${2:-}" "${3:-$(date -u +%F)}" ;;
   notes) notes "${2:-}" || fail "$changelog has no release ${2:-}." ;;
   *) usage ;;
