@@ -107,6 +107,7 @@ Examples:
 - Put the Linear ticket first in the title: `[HEIM-XX] <type>(<scope>): <description>`. Without a ticket, use the conventional title alone.
 - In the description, say why the change is needed and how to test it.
 - Do not mention Claude in the description.
+- Every change goes to `main` through a PR. A PR merges with rebase only, after the `Tests`, `Static Analysis` and `Changelog` checks pass.
 
 ## Changelog
 
@@ -114,10 +115,13 @@ Examples:
 
 - Add each notable change to `## [Unreleased]`, under `### Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` or `Security`.
 - Write entries for app developers. Do not copy commit messages. Leave out changes to tests, CI and internal code.
-- Do not add release headings or links by hand. The release workflow adds them.
+- A PR that does not change `CHANGELOG.md` fails the `Changelog` check. For changes to tests, CI or internal code, add the `skip-changelog` label.
+- Do not add release headings or links by hand. `bin/changelog release` adds them.
 
 ## Releases
 
-Run the `release` workflow in GitHub Actions and select `patch`, `minor` or `major`. It moves the `Unreleased` entries to the new version, commits `CHANGELOG.md` to `main`, then tags that commit and creates the GitHub release with those entries. It stops if `Unreleased` has no entries.
+1. On a new branch, run `bin/changelog release patch` (or `minor` or `major`). It moves the `Unreleased` entries to the new version and prints the version. It stops if `Unreleased` has no entries.
+2. Commit `CHANGELOG.md` as `chore: release vX.Y.Z` and open a PR.
+3. When the PR merges, the `release` workflow tags the commit and creates the GitHub release with the entries.
 
 Before 1.0.0, use `minor` for breaking changes. Composer's `^0.1` does not accept 0.2.
