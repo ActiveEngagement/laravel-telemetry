@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The README and the Boost skill now turn off the OpenTelemetry SDK in tests with `<server name="OTEL_SDK_DISABLED" value="true"/>`. The `<env>` entry did not turn it off. Update the app's `phpunit.xml`.
+
 ## [0.1.0] - 2026-10-23
 
 ### Added
