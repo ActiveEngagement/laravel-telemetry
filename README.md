@@ -88,9 +88,11 @@ Event::listen(function (AiSpanStarted $event) {
 Add to the app's `phpunit.xml`:
 
 ```xml
-<env name="OTEL_SDK_DISABLED" value="true"/>
+<server name="OTEL_SDK_DISABLED" value="true"/>
 <env name="TELEMETRY_ENABLED" value="false"/>
 ```
+
+`OTEL_SDK_DISABLED` is a `<server>` entry, because PHPUnit writes an `<env>` value of `true` as `1` and the SDK reads `1` as `false`.
 
 ## Development
 

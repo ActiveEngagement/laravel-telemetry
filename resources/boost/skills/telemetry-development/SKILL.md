@@ -75,9 +75,11 @@ Use these names in Heimdall queries:
 `phpunit.xml` turns off telemetry:
 
 ```xml
-<env name="OTEL_SDK_DISABLED" value="true"/>
+<server name="OTEL_SDK_DISABLED" value="true"/>
 <env name="TELEMETRY_ENABLED" value="false"/>
 ```
+
+`OTEL_SDK_DISABLED` is a `<server>` entry, because PHPUnit writes an `<env>` value of `true` as `1` and the SDK reads `1` as `false`.
 
 Do not test telemetry in the app. The package has its own tests.
 
