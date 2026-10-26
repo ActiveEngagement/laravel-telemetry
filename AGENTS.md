@@ -108,6 +108,16 @@ Examples:
 - In the description, say why the change is needed and how to test it.
 - Do not mention Claude in the description.
 
+## Changelog
+
+`CHANGELOG.md` follows [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/). `composer test:lint` runs `bin/changelog check`, which rejects other formats.
+
+- Add each notable change to `## [Unreleased]`, under `### Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` or `Security`.
+- Write entries for app developers. Do not copy commit messages. Leave out changes to tests, CI and internal code.
+- Do not add release headings or links by hand. The release workflow adds them.
+
 ## Releases
 
-Run the `release` workflow in GitHub Actions and select `patch`, `minor` or `major`.
+Run the `release` workflow in GitHub Actions and select `patch`, `minor` or `major`. It moves the `Unreleased` entries to the new version, commits `CHANGELOG.md` to `main`, then tags that commit and creates the GitHub release with those entries. It stops if `Unreleased` has no entries.
+
+Before 1.0.0, use `minor` for breaking changes. Composer's `^0.1` does not accept 0.2.

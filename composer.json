@@ -54,7 +54,8 @@
     ],
     "test:lint": [
       "@php vendor/bin/pint --parallel --test",
-      "@php vendor/bin/rector --dry-run"
+      "@php vendor/bin/rector --dry-run",
+      "bin/changelog check"
     ],
     "test:types": "@php vendor/bin/phpstan",
     "test:unit": "@php vendor/bin/pest",

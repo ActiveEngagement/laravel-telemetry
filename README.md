@@ -99,6 +99,6 @@ composer qa          # fix code style, then run every check
 composer lint        # Rector and Pint
 composer test        # tests, code style and types
 composer test:unit   # Pest
-composer test:lint   # Pint and Rector, without changes
+composer test:lint   # Pint, Rector and the changelog format, without changes
 composer test:types  # PHPStan
 ```

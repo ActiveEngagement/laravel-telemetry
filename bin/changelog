@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+changelog=CHANGELOG.md
+repository=https://github.com/ActiveEngagement/laravel-telemetry
+
+usage() {
+  echo "usage: bin/changelog check | release <version> [<date>] | notes <version>" >&2
+  exit 1
+}
+
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+count_lines() {
+  awk 'END { print NR }' "$@"
+}
+
+header() {
+  cat <<'EOF'
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+EOF
+}
+
+versions() {
+  sed -nE 's/^## \[([0-9]+\.[0-9]+\.[0-9]+)\] - .*/\1/p' "$changelog"
+}
+
+links() {
+  versions | awk -v repository="$repository" '
+    { version[NR] = $0 }
+    END {
+      printf "[unreleased]: %s/compare/v%s...HEAD\n", repository, version[1]
+      for (i = 1; i < NR; i++) {
+        printf "[%s]: %s/compare/v%s...v%s\n", version[i], repository, version[i + 1], version[i]
+      }
+      printf "[%s]: %s/releases/tag/v%s\n", version[NR], repository, version[NR]
+    }'
+}
+
+check_header() {
+  if [[ "$(head -n "$(header | count_lines)" "$changelog")" != "$(header)" ]]; then
+    echo "$changelog:1: start the file with this header:"
+    header
+  fi
+}
+
+check_links() {
+  local expected
+  expected=$(links)
+
+  if [[ "$(grep -E '^\[[^]]+\]: ' "$changelog" || true)" != "$expected" ]]; then
+    echo "$changelog: end the file with these links:"
+    echo "$expected"
+  fi
+}
+
+check_releases() {
+  awk -v file="$changelog" -v first="$(($(header | count_lines) + 1))" '
+    function error(line, message) {
+      printf "%s:%d: %s\n", file, line, message
+    }
+
+    function newer(version, than,    a, b, i) {
+      split(version, a, ".")
+      split(than, b, ".")
+      for (i = 1; i <= 3; i++) {
+        if (a[i] + 0 != b[i] + 0) {
+          return a[i] + 0 > b[i] + 0
+        }
+      }
+      return 0
+    }
+
+    function close_type() {
+      if (type != "" && !items) {
+        error(type_line, "add entries under ### " type)
+      }
+    }
+
+    function close_release() {
+      close_type()
+      if (release != "Unreleased" && !types) {
+        error(release_line, "add entries to " release)
+      }
+    }
+
+    BEGIN { release = "Unreleased"; release_line = first - 1 }
+
+    NR < first || /^$/ { next }
+
+    /^\[[^]]+\]: / { links = 1; next }
+
+    links { error(NR, "keep the links at the end of the file"); next }
+
+    /^## / {
+      close_release()
+      release = substr($0, 4); release_line = NR; type = ""; types = 0; split("", seen)
+
+      if ($0 !~ /^## \[[0-9]+\.[0-9]+\.[0-9]+\] - [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]( \[YANKED\])?$/) {
+        error(NR, "write the release heading as ## [1.2.3] - 2026-01-31")
+        next
+      }
+
+      version = substr($0, 5, index($0, "]") - 5)
+      date = substr($0, index($0, "] - ") + 4, 10)
+      release = version
+
+      if (substr(date, 6, 2) + 0 < 1 || substr(date, 6, 2) + 0 > 12 || substr(date, 9, 2) + 0 < 1 || substr(date, 9, 2) + 0 > 31) {
+        error(NR, "write the date as YYYY-MM-DD")
+      }
+      if (previous_version != "" && !newer(previous_version, version)) {
+        error(NR, "list releases newest first")
+      }
+      if (previous_date != "" && date > previous_date) {
+        error(NR, "date " version " on or before " previous_version)
+      }
+
+      previous_version = version; previous_date = date
+      next
+    }
+
+    /^### / {
+      close_type()
+      type = substr($0, 5); type_line = NR; items = 0
+
+      if (type !~ /^(Added|Changed|Deprecated|Removed|Fixed|Security)$/) {
+        error(NR, "use Added, Changed, Deprecated, Removed, Fixed or Security")
+      } else if (type in seen) {
+        error(NR, "merge the two ### " type " sections")
+      }
+
+      seen[type] = 1; types++
+      next
+    }
+
+    /^- / && type != "" { items++; next }
+
+    /^  / && items { next }
+
+    { error(NR, "put each entry in a - list under a ### change type") }
+
+    END { close_release() }
+  ' "$changelog"
+}
+
+check() {
+  local errors
+  errors=$(check_header; check_releases; check_links)
+
+  if [[ -n $errors ]]; then
+    fail "$errors"
+  fi
+}
+
+notes() {
+  awk -v heading="## [$1]" '
+    $0 == heading || index($0, heading " - ") == 1 { found = 1; next }
+    found && /^(## |\[)/ { exit }
+    found && (NF || count) { line[++count] = $0; if (NF) { last = count } }
+    END {
+      for (i = 1; i <= last; i++) {
+        print line[i]
+      }
+      exit !found
+    }' "$changelog"
+}
+
+release() {
+  local version=$1 date=$2 entries updated_links
+
+  [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || usage
+  check
+
+  if [[ -z "$(notes Unreleased)" ]]; then
+    fail "$changelog: add entries under ## [Unreleased] before the release."
+  fi
+
+  entries=$(awk -v heading="## [$version] - $date" '{ print } $0 == "## [Unreleased]" { print ""; print heading }' "$changelog" | grep -vE '^\[[^]]+\]: ')
+  printf '%s\n' "$entries" > "$changelog"
+
+  updated_links=$(links)
+  printf '\n%s\n' "$updated_links" >> "$changelog"
+
+  check
+}
+
+[[ -f $changelog ]] || fail "$changelog does not exist."
+
+case "${1:-}" in
+  check) check ;;
+  release) release "${2:-}" "${3:-$(date -u +%F)}" ;;
+  notes) notes "${2:-}" || fail "$changelog has no release ${2:-}." ;;
+  *) usage ;;
+esac
