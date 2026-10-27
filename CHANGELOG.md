@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-27
+
 ### Changed
 
 - The README covers the athena `deploy.php` line for `ATHENA_DEPLOY_COMMIT`, the general `OTEL_EXPORTER_OTLP_TIMEOUT`, `TELEMETRY_QUEUE_MONITOR=horizon` for Horizon apps, and what changes when an app deletes or keeps `config/opentelemetry.php`.
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ActiveEngagement/laravel-telemetry/releases/tag/v0.1.0
