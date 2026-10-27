@@ -16,7 +16,7 @@ Requires PHP 8.4+ and Laravel 12 or 13.30+. AI tracing requires `laravel/ai` 1.3
 composer require activeengagement/laravel-telemetry
 ```
 
-Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default.
+Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default. Without it, keepsuit's defaults apply: metrics also go over OTLP, and no request paths are excluded from tracing. If the app keeps the file, keepsuit merges it with its own config by top-level key, so each key that the file sets must be complete. For example, an `instrumentation` array must list every instrumentation, not only the changed one.
 
 To install the agent skill, run `php artisan boost:install` and select `activeengagement/laravel-telemetry`.
 
@@ -26,6 +26,7 @@ To install the agent skill, run `php artisan boost:install` and select `activeen
 OTEL_SERVICE_NAME=savant
 OTEL_EXPORTER_OTLP_ENDPOINT=https://heimdall.actengage.com
 OTEL_EXPORTER_OTLP_HEADERS=authorization=<ingestion-api-key>
+OTEL_EXPORTER_OTLP_TIMEOUT=3000       # milliseconds, for traces, logs and metrics
 
 TELEMETRY_ENABLED=true
 TELEMETRY_LOG_LEVEL=info              # defaults to LOG_LEVEL
@@ -34,13 +35,21 @@ TELEMETRY_QUEUE_MONITOR=horizon       # horizon, queue or none (default)
 TELEMETRY_AI_WATCHER=true
 ```
 
-Other `OTEL_*` variables work as keepsuit documents them.
+Other `OTEL_*` variables work as keepsuit documents them. Set the general `OTEL_EXPORTER_OTLP_TIMEOUT`, not only `OTEL_EXPORTER_OTLP_TRACES_TIMEOUT`: logs and metrics go over OTLP too, and their exporters use the default of 10 seconds with 3 retries. A PHP-FPM worker exports after it sends the response, so a slow endpoint keeps it busy for that time.
+
+An app that runs Horizon sets `TELEMETRY_QUEUE_MONITOR=horizon`. With the default `none`, it sends no queue heartbeat.
 
 `service.version` comes from the first one that is set: `LARAVEL_CLOUD_DEPLOY_UUID`, `FORGE_DEPLOY_COMMIT`, `ATHENA_DEPLOY_COMMIT`.
 
-- **Laravel Cloud:** add the Composer auth step for private packages to the build commands.
+- **Laravel Cloud:** no extra step.
 - **Forge:** the deploy script must run `artisan config:cache`, because `FORGE_DEPLOY_COMMIT` exists only during the deploy.
-- **athena:** set `ATHENA_DEPLOY_COMMIT` in `deploy.php` before `artisan config:cache`. Remove `OTEL_LOGS_EXPORTER=null`. Stop the collector's log-file tail for the app, or each log arrives two times.
+- **athena:** the Deployer recipe runs `artisan optimize` on the host, so `deploy.php` passes the commit that the GitHub Actions runner builds:
+
+  ```php
+  set('env', array_filter(['ATHENA_DEPLOY_COMMIT' => getenv('GITHUB_SHA') ?: null]));
+  ```
+
+  A later `artisan optimize` or `artisan config:cache` run by hand on the host drops `service.version` until the next deploy. Remove `OTEL_LOGS_EXPORTER=null` and `OTEL_METRICS_EXPORTER=null`. Stop the collector's log-file tail for the app, or each log arrives two times.
 
 ## Logs
 

@@ -1,7 +1,7 @@
 ---
 name: telemetry-development
 description: Use in apps that require activeengagement/laravel-telemetry. Trigger when working with OpenTelemetry, tracing, spans, log channels, heartbeats, AI token or spend attribution, Heimdall queries, config/opentelemetry.php, or telemetry settings in phpunit.xml. Covers what the package already does, its extension points, and the attribute names it sends.
-license: proprietary
+license: MIT
 metadata:
   author: activeengagement
 ---
@@ -21,7 +21,7 @@ The package already does these things:
 - Do not start spans or pass the trace into a streamed response body. The body gets a stream span in the request's trace.
 - Do not add the user to spans or logs. The package adds it, also in queued jobs.
 - Do not use `putenv()`, `OTEL_TRACES_EXPORTER=null` or `Event::fake()` to stop telemetry in tests. See [Testing](#testing).
-- Do not publish `config/opentelemetry.php` unless a keepsuit default must change.
+- Do not publish `config/opentelemetry.php` unless a keepsuit default must change. keepsuit merges it by top-level key, so each key that the file sets must be complete, for example the whole `instrumentation` array.
 
 ## Extension points
 
@@ -83,7 +83,12 @@ Use these names in Heimdall queries:
 
 `OTEL_SDK_DISABLED` is a `<server>` entry, because PHPUnit writes an `<env>` value of `true` as `1` and the SDK reads `1` as `false`.
 
-Do not test telemetry in the app. The package has its own tests.
+Do not test what the package does, such as spans, log export and heartbeats. The package has its own tests.
+
+Test the app's own telemetry code: each `HasTelemetryAttributes` implementation, each `AiSpanStarted` listener and the `OpenTelemetry::user()` resolver.
+
+- A listener: give it a span from an SDK `TracerProvider` with a `SimpleSpanProcessor` and an `InMemoryExporter`, then assert the exported attributes. `OTEL_SDK_DISABLED` does not affect a provider that the test builds itself.
+- The user resolver: assert `resolve(ContextResolver::class)->userAttributes($user)`.
 
 ## More
 

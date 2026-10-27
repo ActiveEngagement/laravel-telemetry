@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The README covers the athena `deploy.php` line for `ATHENA_DEPLOY_COMMIT`, the general `OTEL_EXPORTER_OTLP_TIMEOUT`, `TELEMETRY_QUEUE_MONITOR=horizon` for Horizon apps, and what changes when an app deletes or keeps `config/opentelemetry.php`.
+- The Boost skill tells apps to test their own telemetry code (`HasTelemetryAttributes`, `AiSpanStarted` listeners, the user resolver), and shows how.
+
+### Fixed
+
+- The README no longer asks Laravel Cloud apps for a Composer auth step, and the Boost skill's license is MIT.
+
 ## [0.1.1] - 2026-10-27
 
 ### Changed
