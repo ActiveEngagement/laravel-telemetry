@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-27
+
 ### Changed
 
 - The package is open source under the MIT license, and the repository is public. Apps install it without Composer credentials.
@@ -29,5 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ActiveEngagement/laravel-telemetry/releases/tag/v0.1.0
