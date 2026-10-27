@@ -18,7 +18,17 @@ composer require activeengagement/laravel-telemetry
 
 Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default. Without it, keepsuit's defaults apply: metrics also go over OTLP, and no request paths are excluded from tracing. If the app keeps the file, keepsuit merges it with its own config by top-level key, so each key that the file sets must be complete. For example, an `instrumentation` array must list every instrumentation, not only the changed one.
 
-To install the agent skill, run `php artisan boost:install` and select `activeengagement/laravel-telemetry`.
+To install the agent skill, run `php artisan boost:install` and select `activeengagement/laravel-telemetry`. To update the skill with each new version of the package, run `boost:update` after each `composer update`:
+
+```json
+"scripts": {
+    "post-update-cmd": [
+        "@php artisan boost:update --ansi"
+    ]
+}
+```
+
+In a Composer script, `boost:update` updates only the skills that `boost:install` installed. It does not add new ones.
 
 ## Environment
 

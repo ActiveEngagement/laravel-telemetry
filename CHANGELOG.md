@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The README covers the athena `deploy.php` line for `ATHENA_DEPLOY_COMMIT`, the general `OTEL_EXPORTER_OTLP_TIMEOUT`, `TELEMETRY_QUEUE_MONITOR=horizon` for Horizon apps, and what changes when an app deletes or keeps `config/opentelemetry.php`.
 - The Boost skill tells apps to test their own telemetry code (`HasTelemetryAttributes`, `AiSpanStarted` listeners, the user resolver), and shows how.
+- The README shows the `post-update-cmd` entry that runs `boost:update`, so the app's skill follows each new version of the package.
 
 ### Fixed
 
