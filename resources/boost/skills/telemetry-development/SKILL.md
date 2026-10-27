@@ -18,6 +18,7 @@ The package already does these things:
 - Do not add heartbeat commands or schedule entries. Use `TELEMETRY_SCHEDULER_HEARTBEAT` and `TELEMETRY_QUEUE_MONITOR` (`horizon`, `queue` or `none`).
 - Do not add laravel/ai listeners that record spans, tokens or the user. The package records every laravel/ai operation.
 - Do not start spans for commands or jobs. Each command and job gets a span.
+- Do not start spans or pass the trace into a streamed response body. The body gets a stream span in the request's trace.
 - Do not add the user to spans or logs. The package adds it, also in queued jobs.
 - Do not use `putenv()`, `OTEL_TRACES_EXPORTER=null` or `Event::fake()` to stop telemetry in tests. See [Testing](#testing).
 - Do not publish `config/opentelemetry.php` unless a keepsuit default must change.
@@ -65,6 +66,7 @@ Use these names in Heimdall queries:
 | Environment | `deployment.environment.name` (resource) |
 | Deploy | `service.version` (resource) |
 | User | `user.id` |
+| Stream spans | `{method} {route} stream` (attributes `http.request.method`, `http.route`) |
 | AI spans | `invoke_agent {agent}`, `execute_tool {tool}`, `{operation} {model}` |
 | AI attributes | `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.agent.name`, `gen_ai.conversation.id`, `gen_ai.tool.name` |
 | Tokens | `gen_ai.usage.input_tokens` (includes cached tokens), `gen_ai.usage.output_tokens`, `gen_ai.usage.cache_read.input_tokens`, `gen_ai.usage.cache_creation.input_tokens` |

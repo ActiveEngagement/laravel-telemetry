@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\API\Trace\StatusCode;
+use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\SDK\Logs\ReadableLogRecord;
 use OpenTelemetry\SDK\Trace\EventInterface;
 use OpenTelemetry\SDK\Trace\ImmutableSpan;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\Fixtures\ImportOrders;
 
 function spanOfKind(int $kind): ?ImmutableSpan
@@ -31,6 +33,11 @@ function recordedExceptions(?ImmutableSpan $span): array
 function logWithBody(string $body): ?ReadableLogRecord
 {
     return collect(exportedLogs())->first(fn (ReadableLogRecord $log): bool => $log->getBody() === $body);
+}
+
+function spanNamed(string $name): ?ImmutableSpan
+{
+    return collect(exportedSpans())->first(fn (ImmutableSpan $span): bool => $span->getName() === $name);
 }
 
 it('records an exception in an HTTP request on the server span', function (): void {
@@ -59,6 +66,49 @@ it('links a log written during a request to the server span', function (): void 
 
     expect($log?->getSpanContext()->getTraceId())->toBe($span?->getTraceId())
         ->and($log?->getSpanContext()->getSpanId())->toBe($span?->getSpanId());
+});
+
+it('traces a streamed response body in a child span of the request span', function (): void {
+    Route::get('/chats/{conversation}', fn () => response()->stream(function (): void {
+        Log::info('streaming the reply');
+        resolve(TracerInterface::class)->spanBuilder('invoke_agent savant')->startSpan()->end();
+
+        echo 'Hello';
+    }));
+
+    expect($this->get('/chats/1')->streamedContent())->toBe('Hello');
+
+    $request = spanOfKind(SpanKind::KIND_SERVER);
+    $stream = spanNamed('GET /chats/{conversation} stream');
+
+    expect($stream?->getTraceId())->toBe($request?->getTraceId())
+        ->and($stream?->getParentSpanId())->toBe($request?->getSpanId())
+        ->and($stream?->getStartEpochNanos())->toBeGreaterThanOrEqual($request?->getEndEpochNanos())
+        ->and($stream?->getAttributes()->get('http.route'))->toBe('/chats/{conversation}')
+        ->and(spanNamed('invoke_agent savant')?->getParentSpanId())->toBe($stream?->getSpanId())
+        ->and(logWithBody('streaming the reply')?->getSpanContext()->getSpanId())->toBe($stream?->getSpanId());
+});
+
+it('records an exception in a streamed response body on the stream span', function (): void {
+    Route::get('/chats/{conversation}', fn () => response()->stream(fn () => throw new RuntimeException('The stream failed.')));
+
+    $response = $this->get('/chats/1');
+
+    expect(fn () => $response->baseResponse->sendContent())->toThrow(RuntimeException::class, 'The stream failed.');
+
+    $stream = spanNamed('GET /chats/{conversation} stream');
+
+    expect($stream?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
+        ->and(recordedExceptions($stream))->toBe(['The stream failed.'])
+        ->and(spanOfKind(SpanKind::KIND_SERVER)?->getStatus()->getCode())->toBe(StatusCode::STATUS_OK);
+});
+
+it('leaves a generator stream for Octane to send', function (): void {
+    Route::get('/chats/{conversation}', fn (): StreamedResponse => (new StreamedResponse)->setCallback(fn () => yield 'Hello'));
+
+    $body = $this->get('/chats/1')->baseResponse->getCallback();
+
+    expect(iterator_to_array($body()))->toBe(['Hello']);
 });
 
 it('records an exception in a queued job on the job span', function (): void {
