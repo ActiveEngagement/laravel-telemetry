@@ -9,6 +9,7 @@ use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
 use ActiveEngagement\Telemetry\Instrumentation\QueueInstrumentation;
+use ActiveEngagement\Telemetry\Instrumentation\TraceRequestMiddleware;
 use ActiveEngagement\Telemetry\Support\ActiveSpans;
 use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
 use ActiveEngagement\Telemetry\Support\WallClock;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\QueueInstrumentation as KeepsuitQueueInstrumentation;
+use Keepsuit\LaravelOpenTelemetry\Instrumentation\Support\Http\Server\TraceRequestMiddleware as KeepsuitTraceRequestMiddleware;
 use OpenTelemetry\API\Common\Time\Clock;
 use Override;
 
@@ -36,6 +38,7 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->app->singleton(ActiveSpans::class);
         $this->app->bind(KeepsuitConsoleInstrumentation::class, ConsoleInstrumentation::class);
         $this->app->bind(KeepsuitQueueInstrumentation::class, QueueInstrumentation::class);
+        $this->app->bind(KeepsuitTraceRequestMiddleware::class, TraceRequestMiddleware::class);
 
         $this->app->booting(fn () => $this->registerResourceAttributes($this->app->make(Repository::class)));
     }
