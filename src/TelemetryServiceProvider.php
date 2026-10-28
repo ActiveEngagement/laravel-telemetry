@@ -10,6 +10,8 @@ use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
 use ActiveEngagement\Telemetry\Contracts\BrowserContext;
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
+use ActiveEngagement\Telemetry\Instrumentation\HttpClientInstrumentation;
+use ActiveEngagement\Telemetry\Instrumentation\HttpServerInstrumentation;
 use ActiveEngagement\Telemetry\Instrumentation\QueueInstrumentation;
 use ActiveEngagement\Telemetry\Instrumentation\TraceRequestMiddleware;
 use ActiveEngagement\Telemetry\Support\ActiveSpans;
@@ -27,6 +29,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 use Inertia\Inertia;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
+use Keepsuit\LaravelOpenTelemetry\Instrumentation\HttpClientInstrumentation as KeepsuitHttpClientInstrumentation;
+use Keepsuit\LaravelOpenTelemetry\Instrumentation\HttpServerInstrumentation as KeepsuitHttpServerInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\QueueInstrumentation as KeepsuitQueueInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\Support\Http\Server\TraceRequestMiddleware as KeepsuitTraceRequestMiddleware;
 use OpenTelemetry\API\Common\Time\Clock;
@@ -44,6 +48,8 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->app->singleton(ActiveSpans::class);
         $this->app->bind(KeepsuitConsoleInstrumentation::class, ConsoleInstrumentation::class);
         $this->app->bind(KeepsuitQueueInstrumentation::class, QueueInstrumentation::class);
+        $this->app->bind(KeepsuitHttpServerInstrumentation::class, HttpServerInstrumentation::class);
+        $this->app->bind(KeepsuitHttpClientInstrumentation::class, HttpClientInstrumentation::class);
         $this->app->bind(KeepsuitTraceRequestMiddleware::class, TraceRequestMiddleware::class);
 
         $this->app->booting(fn () => $this->registerResourceAttributes($this->app->make(Repository::class)));

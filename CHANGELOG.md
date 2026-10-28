@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- Request spans and outgoing HTTP spans redact `code`, `state`, `access_token`, `refresh_token`, `id_token`, `token`, `client_secret`, `password`, `api_key`, `X-Amz-Signature`, `X-Amz-Credential` and `X-Amz-Security-Token` in `url.query` and `url.full`. Before, keepsuit redacted only a few signing parameters, so OAuth and WorkOS login codes and S3 download signatures reached Heimdall in clear text. The list is `telemetry.sensitive_query_parameters`, so an app can change it in `config/telemetry.php`.
+
 ## [0.2.0] - 2026-10-28
 
 ### Added
