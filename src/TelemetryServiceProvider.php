@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry;
 
+use ActiveEngagement\Telemetry\Browser\BrowserTags;
 use ActiveEngagement\Telemetry\Console\HeartbeatCommand;
 use ActiveEngagement\Telemetry\Console\HorizonHeartbeatCommand;
+use ActiveEngagement\Telemetry\Contracts\BrowserContext;
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
 use ActiveEngagement\Telemetry\Instrumentation\QueueInstrumentation;
 use ActiveEngagement\Telemetry\Instrumentation\TraceRequestMiddleware;
 use ActiveEngagement\Telemetry\Support\ActiveSpans;
+use ActiveEngagement\Telemetry\Support\KeepsuitBrowserContext;
 use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
 use ActiveEngagement\Telemetry\Support\WallClock;
 use Illuminate\Contracts\Config\Repository;
@@ -21,6 +24,8 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
+use Inertia\Inertia;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\QueueInstrumentation as KeepsuitQueueInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\Support\Http\Server\TraceRequestMiddleware as KeepsuitTraceRequestMiddleware;
@@ -35,6 +40,7 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/telemetry.php', 'telemetry');
 
         $this->app->singleton(ContextResolver::class, KeepsuitContextResolver::class);
+        $this->app->singleton(BrowserContext::class, KeepsuitBrowserContext::class);
         $this->app->singleton(ActiveSpans::class);
         $this->app->bind(KeepsuitConsoleInstrumentation::class, ConsoleInstrumentation::class);
         $this->app->bind(KeepsuitQueueInstrumentation::class, QueueInstrumentation::class);
@@ -48,6 +54,7 @@ class TelemetryServiceProvider extends ServiceProvider
         $this->registerClock();
         $this->registerCommands();
         $this->registerPublishing();
+        $this->registerBladeDirective();
 
         if (! $config->get('telemetry.enabled')) {
             return;
@@ -57,6 +64,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
         $this->registerUserContext();
         $this->registerSpanCleanup($events);
+        $this->registerInertiaUser($config);
 
         $this->app->booted(Telemetry::registerWatchers(...));
     }
@@ -87,6 +95,24 @@ class TelemetryServiceProvider extends ServiceProvider
         Context::dehydrating(fn (ContextRepository $context) => rescue(
             fn () => $this->app->make(ContextResolver::class)->dehydrating($context), report: false
         ));
+    }
+
+    protected function registerBladeDirective(): void
+    {
+        $this->callAfterResolving(BladeCompiler::class, function (BladeCompiler $blade): void {
+            $blade->directive('telemetry', BrowserTags::compile(...));
+        });
+    }
+
+    protected function registerInertiaUser(Repository $config): void
+    {
+        if (! Telemetry::isInertiaInstalled() || ! $config->get('telemetry.browser.enabled')) {
+            return;
+        }
+
+        Inertia::share('telemetry', fn (): array => [
+            'user' => rescue(fn (): ?array => $this->app->make(BrowserContext::class)->user()),
+        ]);
     }
 
     protected function registerClock(): void

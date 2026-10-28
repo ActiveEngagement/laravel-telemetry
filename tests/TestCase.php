@@ -6,6 +6,7 @@ namespace Tests;
 
 use ActiveEngagement\Telemetry\TelemetryServiceProvider;
 use Illuminate\Contracts\Config\Repository;
+use Inertia\ServiceProvider as InertiaServiceProvider;
 use Keepsuit\LaravelOpenTelemetry\LaravelOpenTelemetryServiceProvider;
 use Laravel\Ai\AiServiceProvider;
 use Monolog\Handler\NullHandler;
@@ -24,6 +25,7 @@ abstract class TestCase extends OrchestraTestCase
             LaravelOpenTelemetryServiceProvider::class,
             TelemetryServiceProvider::class,
             AiServiceProvider::class,
+            InertiaServiceProvider::class,
         ];
     }
 

@@ -102,6 +102,44 @@ Event::listen(function (AiSpanStarted $event) {
 });
 ```
 
+## Browser
+
+Render the browser config in the root Blade layout, before the app's scripts:
+
+```blade
+<head>
+    @telemetry
+    @vite(['resources/js/app.ts'])
+</head>
+```
+
+The directive renders a `<script id="telemetry-config" type="application/json">` tag for [`@actengage/telemetry-browser`](https://github.com/ActiveEngagement/telemetry-browser), which starts HyperDX with session replay. It also renders `<meta name="traceparent">`, so the first page load joins the request's trace. Install the npm package and start it in the app's entry point:
+
+```ts
+import { router } from '@inertiajs/vue3';
+import { init } from '@actengage/telemetry-browser';
+import { trackInertiaUser } from '@actengage/telemetry-browser/inertia';
+
+void init();
+trackInertiaUser(router);
+```
+
+The browser service is `<OTEL_SERVICE_NAME>-browser`, with the server's `deployment.environment.name` and `service.version`. The user is the one that the `OpenTelemetry::user()` resolver returns (`user.id`, `user.name`, `user.email`), and there is none when `OTEL_USER_CONTEXT=false`. In an Inertia app, the package shares the user as the `telemetry.user` prop. Call `Inertia::clearHistory()` on logout.
+
+```ini
+TELEMETRY_BROWSER_ENABLED=true
+TELEMETRY_BROWSER_URL=                # defaults to OTEL_EXPORTER_OTLP_ENDPOINT
+TELEMETRY_BROWSER_API_KEY=            # defaults to the authorization value in OTEL_EXPORTER_OTLP_HEADERS
+TELEMETRY_BROWSER_REPLAY=true
+TELEMETRY_BROWSER_CONSOLE_CAPTURE=true
+```
+
+Set `TELEMETRY_BROWSER_URL` when browsers cannot reach the server's endpoint, for example a local collector. The page shows the ingestion key, as a `VITE_*` key did before, so remove `VITE_HYPERDX_API_KEY` from the build.
+
+When browser telemetry is on but a setting is unset, blank or the wrong type, the directive reports an `InvalidArgumentException` and renders `{"v":1,"enabled":false}`. The page still works, and the browser sends nothing. Where the app has no ingestion key, for example on a laptop, set `TELEMETRY_BROWSER_ENABLED=false`.
+
+Replays mask every input and block iframes and `[data-replay-block]` elements. To change that, publish the config.
+
 ## Testing
 
 Add to the app's `phpunit.xml`:

@@ -1,6 +1,6 @@
 ---
 name: telemetry-development
-description: Use in apps that require activeengagement/laravel-telemetry. Trigger when working with OpenTelemetry, tracing, spans, log channels, heartbeats, AI token or spend attribution, Heimdall queries, config/opentelemetry.php, or telemetry settings in phpunit.xml. Covers what the package already does, its extension points, and the attribute names it sends.
+description: Use in apps that require activeengagement/laravel-telemetry. Trigger when working with OpenTelemetry, tracing, spans, log channels, heartbeats, AI token or spend attribution, browser RUM or session replay (HyperDX browser, @telemetry, @actengage/telemetry-browser), Heimdall queries, config/opentelemetry.php, or telemetry settings in phpunit.xml. Covers what the package already does, its extension points, and the attribute names it sends.
 license: MIT
 metadata:
   author: activeengagement
@@ -20,6 +20,7 @@ The package already does these things:
 - Do not start spans for commands or jobs. Each command and job gets a span.
 - Do not start spans or pass the trace into a streamed response body. The body gets a stream span in the request's trace.
 - Do not add the user to spans or logs. The package adds it, also in queued jobs.
+- Do not call `HyperDX.init()` or add `VITE_HYPERDX_API_KEY`. Render `@telemetry` in the root layout, and call `init()` and `trackInertiaUser(router)` from `@actengage/telemetry-browser`. Do not share the user for the browser yourself: the package shares the `telemetry.user` Inertia prop. An `InvalidArgumentException` report from `@telemetry` names the browser setting that is wrong: set it, or set `TELEMETRY_BROWSER_ENABLED=false`.
 - Do not use `putenv()`, `OTEL_TRACES_EXPORTER=null` or `Event::fake()` to stop telemetry in tests. See [Testing](#testing).
 - Do not publish `config/opentelemetry.php` unless a keepsuit default must change. keepsuit merges it by top-level key, so each key that the file sets must be complete, for example the whole `instrumentation` array.
 
@@ -64,6 +65,7 @@ Use these names in Heimdall queries:
 | Data | Name |
 | --- | --- |
 | Environment | `deployment.environment.name` (resource) |
+| Browser service | `{OTEL_SERVICE_NAME}-browser` |
 | Deploy | `service.version` (resource) |
 | User | `user.id` |
 | Stream spans | `{method} {route} stream` (attributes `http.request.method`, `http.route`) |
