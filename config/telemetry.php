@@ -11,6 +11,21 @@ return [
 
     'deployment' => env('LARAVEL_CLOUD_DEPLOY_UUID', env('FORGE_DEPLOY_COMMIT', env('ATHENA_DEPLOY_COMMIT'))),
 
+    'sensitive_query_parameters' => [
+        'code',
+        'state',
+        'access_token',
+        'refresh_token',
+        'id_token',
+        'token',
+        'client_secret',
+        'password',
+        'api_key',
+        'x-amz-signature',
+        'x-amz-credential',
+        'x-amz-security-token',
+    ],
+
     'browser' => [
         'enabled' => env('TELEMETRY_BROWSER_ENABLED', true),
 

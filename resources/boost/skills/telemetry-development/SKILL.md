@@ -22,6 +22,7 @@ The package already does these things:
 - Do not add the user to spans or logs. The package adds it, also in queued jobs.
 - Do not call `HyperDX.init()` or add `VITE_HYPERDX_API_KEY`. Render `@telemetry` in the root layout, and call `init()` and `trackInertiaUser(router)` from `@actengage/telemetry-browser`. Do not share the user for the browser yourself: the package shares the `telemetry.user` Inertia prop. An `InvalidArgumentException` report from `@telemetry` names the browser setting that is wrong: set it, or set `TELEMETRY_BROWSER_ENABLED=false`.
 - Do not use `putenv()`, `OTEL_TRACES_EXPORTER=null` or `Event::fake()` to stop telemetry in tests. See [Testing](#testing).
+- Do not publish `config/opentelemetry.php` to redact login codes, tokens or S3 signatures in URLs. The package redacts them in request and outgoing HTTP spans.
 - Do not publish `config/opentelemetry.php` unless a keepsuit default must change. keepsuit merges it by top-level key, so each key that the file sets must be complete, for example the whole `instrumentation` array.
 
 ## Extension points

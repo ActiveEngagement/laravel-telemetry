@@ -69,6 +69,12 @@ The package taps the default log channel. Context data becomes log attributes. T
 'tap' => [ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry::class.':info'],
 ```
 
+## Query strings
+
+Request spans and outgoing HTTP spans redact secrets in `url.query` and `url.full`. keepsuit redacts `AWSAccessKeyId`, `Signature`, `sig` and `X-Goog-Signature`. The package adds the list in `telemetry.sensitive_query_parameters`: `code`, `state`, `access_token`, `refresh_token`, `id_token`, `token`, `client_secret`, `password`, `api_key`, `X-Amz-Signature`, `X-Amz-Credential` and `X-Amz-Security-Token`. To change the list, publish `config/telemetry.php` and add or remove names in `sensitive_query_parameters`. Names in keepsuit's own `sensitive_query_parameters` options are also redacted.
+
+The browser does not redact URLs. Do not put a secret in a page URL.
+
 ## Commands
 
 Every command gets a span, except workers, the scheduler and `telemetry:*` (see `ConsoleInstrumentation::EXCLUDED`). To exclude more, add patterns in `config/opentelemetry.php`:
