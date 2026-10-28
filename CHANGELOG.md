@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-28
+
 ### Security
 
 - Request spans and outgoing HTTP spans redact `code`, `state`, `access_token`, `refresh_token`, `id_token`, `token`, `client_secret`, `password`, `api_key`, `X-Amz-Signature`, `X-Amz-Credential` and `X-Amz-Security-Token` in `url.query` and `url.full`. Before, keepsuit redacted only a few signing parameters, so OAuth and WorkOS login codes and S3 download signatures reached Heimdall in clear text. The list is `telemetry.sensitive_query_parameters`, so an app can change it in `config/telemetry.php`.
@@ -54,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.0...v0.1.1
