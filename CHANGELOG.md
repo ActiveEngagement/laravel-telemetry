@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-28
+
 ### Added
 
 - The `@telemetry` Blade directive renders the config that `@actengage/telemetry-browser` reads, and a `traceparent` meta tag, so the first page load joins the request's trace. The `TELEMETRY_BROWSER_*` variables set it. The URL and the key default to `OTEL_EXPORTER_OTLP_ENDPOINT` and the authorization header in `OTEL_EXPORTER_OTLP_HEADERS`. A setting that is unset, blank or the wrong type reports an `InvalidArgumentException`, and the page renders with browser telemetry off.
@@ -48,7 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ActiveEngagement/laravel-telemetry/releases/tag/v0.1.0
