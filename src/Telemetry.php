@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry;
 
+use Inertia\Inertia;
 use Laravel\Ai\Events\PromptingAgent;
 use Laravel\Horizon\Contracts\MasterSupervisorRepository;
 
@@ -36,6 +37,11 @@ class Telemetry
     public static function isAiInstalled(): bool
     {
         return class_exists(PromptingAgent::class);
+    }
+
+    public static function isInertiaInstalled(): bool
+    {
+        return class_exists(Inertia::class);
     }
 
     /**

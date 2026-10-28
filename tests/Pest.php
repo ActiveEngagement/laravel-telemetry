@@ -65,6 +65,18 @@ function rewatch(): void
     Telemetry::registerWatchers(app());
 }
 
+/**
+ * @param  array<string, mixed>  $settings
+ */
+function configureBrowser(array $settings = []): void
+{
+    config()->set([
+        'telemetry.browser.url' => 'https://telemetry.example.com',
+        'telemetry.browser.api_key' => 'ingest-key',
+        ...$settings,
+    ]);
+}
+
 function refreshWithEnv(string $name, string $value): void
 {
     putenv("{$name}={$value}");
