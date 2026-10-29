@@ -57,6 +57,7 @@ Other hooks:
 - **Log attributes:** `Context::add('order_id', $order->id)`.
 - **Another log channel:** add `ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry::class.':info'` to its `tap`. Only for channels that are not in `LOG_STACK`, or each log is sent two times.
 - **Exclude a command:** add a pattern to `'excluded'` in the `ConsoleInstrumentation` options of `config/opentelemetry.php`.
+- **Exclude a request path:** add it to `excluded_paths` in `config/telemetry.php`. `/up` is excluded by default.
 - **Pause:** `Telemetry::withoutRecording(fn () => ...)` stops the package's AI spans, logs and heartbeats.
 
 ## Attribute names
