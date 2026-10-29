@@ -26,6 +26,10 @@ return [
         'x-amz-security-token',
     ],
 
+    'excluded_paths' => [
+        '/up',
+    ],
+
     'browser' => [
         'enabled' => env('TELEMETRY_BROWSER_ENABLED', true),
 

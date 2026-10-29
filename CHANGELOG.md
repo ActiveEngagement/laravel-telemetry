@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Requests to `/up`, Laravel's health route, are no longer traced.
+
 ## [0.2.1] - 2026-10-28
 
 ### Security

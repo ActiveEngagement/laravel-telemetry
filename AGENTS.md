@@ -19,7 +19,7 @@
 
 - Laravel's first-party packages (Telescope, Pulse, Horizon, Nightwatch, laravel/ai) are the model. Read their source before you propose a design, and cite the file you followed.
 - The package extends keepsuit. It does not wrap it. OpenTelemetry settings stay in keepsuit's `opentelemetry` config and the `OTEL_*` env vars.
-- `config/telemetry.php` holds only the package's own keys: `enabled`, `deployment`, `browser` and `watchers`. Add an option only when it must exist. Prefer events and hooks for extension.
+- `config/telemetry.php` holds only the package's own keys: `enabled`, `deployment`, `sensitive_query_parameters`, `excluded_paths`, `browser` and `watchers`. Add an option only when it must exist. Prefer events and hooks for extension.
 - Only adapter classes (for example `Support\KeepsuitContextResolver`) read keepsuit config. Watchers never do.
 - Keep keepsuit types out of the public API.
 - Features are watchers (`Watchers\Watcher`) listed in `telemetry.watchers`, as in Telescope.

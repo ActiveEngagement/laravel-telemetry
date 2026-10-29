@@ -16,7 +16,7 @@ Requires PHP 8.4+ and Laravel 12 or 13.30+. AI tracing requires `laravel/ai` 1.3
 composer require activeengagement/laravel-telemetry
 ```
 
-Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default. Without it, keepsuit's defaults apply: metrics also go over OTLP, and no request paths are excluded from tracing. If the app keeps the file, keepsuit merges it with its own config by top-level key, so each key that the file sets must be complete. For example, an `instrumentation` array must list every instrumentation, not only the changed one.
+Delete the app's published `config/opentelemetry.php` unless it must override a keepsuit default. Without it, keepsuit's defaults apply: metrics also go over OTLP. If the app keeps the file, keepsuit merges it with its own config by top-level key, so each key that the file sets must be complete. For example, an `instrumentation` array must list every instrumentation, not only the changed one.
 
 To install the agent skill, run `php artisan boost:install` and select `activeengagement/laravel-telemetry`. To update the skill with each new version of the package, run `boost:update` after each `composer update`:
 
@@ -74,6 +74,10 @@ The package taps the default log channel. Context data becomes log attributes. T
 Request spans and outgoing HTTP spans redact secrets in `url.query` and `url.full`. keepsuit redacts `AWSAccessKeyId`, `Signature`, `sig` and `X-Goog-Signature`. The package adds the list in `telemetry.sensitive_query_parameters`: `code`, `state`, `access_token`, `refresh_token`, `id_token`, `token`, `client_secret`, `password`, `api_key`, `X-Amz-Signature`, `X-Amz-Credential` and `X-Amz-Security-Token`. To change the list, publish `config/telemetry.php` and add or remove names in `sensitive_query_parameters`. Names in keepsuit's own `sensitive_query_parameters` options are also redacted.
 
 The browser does not redact URLs. Do not put a secret in a page URL.
+
+## Excluded paths
+
+Requests to `/up`, Laravel's health route, get no trace, because uptime probes call it all the time. The list is `telemetry.excluded_paths`. To exclude another health path, or to trace `/up`, publish `config/telemetry.php` and change `excluded_paths`. A path can have a `*` wildcard, for example `/webhooks/*`. Paths in keepsuit's own `excluded_paths` options are also excluded.
 
 ## Commands
 
