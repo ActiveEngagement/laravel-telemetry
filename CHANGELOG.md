@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Queue workers, also under Horizon, export a job's spans and logs when they start the next loop, and again when they stop. A busy worker exports at most once every 5 seconds. Before, an idle worker kept them until it ran another job or exited, so traces, logs and failed-job alerts from a quiet queue could arrive minutes late. A worker that a job timeout killed lost them.
+
 ## [0.2.2] - 2026-10-29
 
 ### Changed

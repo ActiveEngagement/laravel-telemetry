@@ -69,6 +69,10 @@ The package taps the default log channel. Context data becomes log attributes. T
 'tap' => [ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry::class.':info'],
 ```
 
+## Queue workers
+
+A worker exports a job's spans and logs when it starts its next loop, at most once every 5 seconds, and when it stops. Leave keepsuit's `OTEL_WORKER_MODE_FLUSH_AFTER_EACH_ITERATION` off: it exports after every job, while the job's timeout still runs.
+
 ## Query strings
 
 Request spans and outgoing HTTP spans redact secrets in `url.query` and `url.full`. keepsuit redacts `AWSAccessKeyId`, `Signature`, `sig` and `X-Goog-Signature`. The package adds the list in `telemetry.sensitive_query_parameters`: `code`, `state`, `access_token`, `refresh_token`, `id_token`, `token`, `client_secret`, `password`, `api_key`, `X-Amz-Signature`, `X-Amz-Credential` and `X-Amz-Security-Token`. To change the list, publish `config/telemetry.php` and add or remove names in `sensitive_query_parameters`. Names in keepsuit's own `sensitive_query_parameters` options are also redacted.
