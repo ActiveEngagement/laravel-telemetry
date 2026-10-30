@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-10-30
+
 ### Fixed
 
 - Queue workers, also under Horizon, export a job's spans and logs when they start the next loop, and again when they stop. A busy worker exports at most once every 5 seconds. Before, an idle worker kept them until it ran another job or exited, so traces, logs and failed-job alerts from a quiet queue could arrive minutes late. A worker that a job timeout killed lost them.
@@ -66,7 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.1.2...v0.2.0
