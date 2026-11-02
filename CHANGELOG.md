@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Telemetry::user()` sets the user attributes.
+
+### Changed
+
+- Spans, logs and the browser get `user.name` and `user.email` with `user.id` by default. Before, they got only `user.id`, unless the app set a resolver. `OTEL_USER_CONTEXT=false` still turns off all user attributes.
+
 ## [0.2.3] - 2026-10-30
 
 ### Fixed

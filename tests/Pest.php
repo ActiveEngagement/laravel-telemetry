@@ -17,6 +17,7 @@ pest()->extend(TestCase::class)
     ->beforeEach(function (): void {
         InMemoryStorageManager::logs()->exchangeArray([]);
         InMemoryStorageManager::spans()->exchangeArray([]);
+        Telemetry::$userResolver = null;
     })
     ->in('Feature');
 

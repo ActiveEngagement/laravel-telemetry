@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 use ActiveEngagement\Telemetry\Contracts\ContextResolver;
 use ActiveEngagement\Telemetry\Support\KeepsuitContextResolver;
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Auth\GenericUser;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Log;
-use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
+use Tests\Fixtures\User;
 
 /**
  * @param  array<mixed>|null  $payload
@@ -19,6 +22,56 @@ function runInWorker(?array $payload): void
     Context::flush();
     Context::hydrate($payload);
 }
+
+it('collects the id, name and email of the user by default', function (): void {
+    $user = new GenericUser(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+    expect(resolve(ContextResolver::class)->userAttributes($user))->toBe([
+        'user.id' => 42,
+        'user.name' => 'Ada Lovelace',
+        'user.email' => 'ada@example.com',
+    ]);
+});
+
+it('collects only the id of a user without a name or email', function (): void {
+    expect(resolve(ContextResolver::class)->userAttributes(new GenericUser(['id' => 42])))->toBe(['user.id' => 42]);
+});
+
+it('collects only the id of a strict model without a name or email', function (): void {
+    Model::preventAccessingMissingAttributes();
+
+    try {
+        $attributes = resolve(ContextResolver::class)->userAttributes((new User)->newFromBuilder(['id' => 42]));
+    } finally {
+        Model::preventAccessingMissingAttributes(false);
+    }
+
+    expect($attributes)->toBe(['user.id' => 42]);
+});
+
+it('collects the attributes of the Telemetry::user resolver instead of the default', function (): void {
+    Telemetry::user(fn (Authenticatable $user): array => ['user.id' => $user->getAuthIdentifier(), 'user.plan' => 'pro']);
+
+    $attributes = resolve(ContextResolver::class)->userAttributes(new GenericUser(['id' => 42, 'name' => 'Ada Lovelace']));
+
+    expect($attributes)->toBe(['user.id' => 42, 'user.plan' => 'pro']);
+});
+
+it('keeps a Telemetry::user resolver that the app sets before the package boots', function (): void {
+    Telemetry::user(fn (): array => ['user.id' => 'custom']);
+
+    $this->refreshApplication();
+
+    expect(resolve(ContextResolver::class)->userAttributes(new GenericUser(['id' => 42])))->toBe(['user.id' => 'custom']);
+});
+
+it('collects no user attributes when user context is off', function (): void {
+    config()->set('opentelemetry.user_context', false);
+
+    $user = new GenericUser(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+
+    expect(resolve(ContextResolver::class)->userAttributes($user))->toBe([]);
+});
 
 it('carries the logged-in user into a queued job', function (): void {
     $this->actingAs(new GenericUser(['id' => 42]));
@@ -47,7 +100,7 @@ it('keeps the original user when a queued job dispatches another job', function 
 });
 
 it('keeps dispatching jobs when the user resolver fails', function (): void {
-    OpenTelemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    Telemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
     $this->actingAs(new GenericUser(['id' => 42]));
 
     expect(Context::dehydrate())->toBeNull();

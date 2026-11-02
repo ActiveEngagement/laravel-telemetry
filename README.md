@@ -94,6 +94,21 @@ Instrumentation\ConsoleInstrumentation::class => [
 ],
 ```
 
+## Users
+
+Spans, logs and the browser get the `user.id`, `user.name` and `user.email` of the logged-in user. To send other attributes, call `Telemetry::user()` in a service provider. It replaces the default:
+
+```php
+use ActiveEngagement\Telemetry\Telemetry;
+
+Telemetry::user(fn (User $user): array => [
+    'user.id' => $user->getAuthIdentifier(),
+    'user.email' => $user->email,
+]);
+```
+
+`OTEL_USER_CONTEXT=false` turns off all user attributes.
+
 ## AI attributes
 
 Agents and tools can add span attributes:
@@ -138,7 +153,7 @@ void init();
 trackInertiaUser(router);
 ```
 
-The browser service is `<OTEL_SERVICE_NAME>-browser`, with the server's `deployment.environment.name` and `service.version`. The user is the one that the `OpenTelemetry::user()` resolver returns (`user.id`, `user.name`, `user.email`), and there is none when `OTEL_USER_CONTEXT=false`. In an Inertia app, the package shares the user as the `telemetry.user` prop. Call `Inertia::clearHistory()` on logout.
+The browser service is `<OTEL_SERVICE_NAME>-browser`, with the server's `deployment.environment.name` and `service.version`. The user is the `user.id`, `user.name` and `user.email` from [Users](#users), and there is none when `OTEL_USER_CONTEXT=false`. In an Inertia app, the package shares the user as the `telemetry.user` prop. Call `Inertia::clearHistory()` on logout.
 
 ```ini
 TELEMETRY_BROWSER_ENABLED=true
