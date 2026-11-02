@@ -53,7 +53,7 @@ Event::listen(function (AiSpanStarted $event) {
 
 Other hooks:
 
-- **User attributes:** `OpenTelemetry::user(fn (User $user) => ['user.id' => $user->id, 'user.email' => $user->email])` in a service provider (keepsuit facade).
+- **User attributes:** `user.id`, `user.name` and `user.email` by default. To change them, call `Telemetry::user(fn (User $user) => ['user.id' => $user->id, 'user.email' => $user->email])` in a service provider. Do not use keepsuit's `OpenTelemetry::user()`.
 - **Log attributes:** `Context::add('order_id', $order->id)`.
 - **Another log channel:** add `ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry::class.':info'` to its `tap`. Only for channels that are not in `LOG_STACK`, or each log is sent two times.
 - **Exclude a command:** add a pattern to `'excluded'` in the `ConsoleInstrumentation` options of `config/opentelemetry.php`.
@@ -69,7 +69,7 @@ Use these names in Heimdall queries:
 | Environment | `deployment.environment.name` (resource) |
 | Browser service | `{OTEL_SERVICE_NAME}-browser` |
 | Deploy | `service.version` (resource) |
-| User | `user.id` |
+| User | `user.id`, `user.name`, `user.email` |
 | Stream spans | `{method} {route} stream` (attributes `http.request.method`, `http.route`) |
 | AI spans | `invoke_agent {agent}`, `execute_tool {tool}`, `{operation} {model}` |
 | AI attributes | `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.agent.name`, `gen_ai.conversation.id`, `gen_ai.tool.name` |
@@ -89,7 +89,7 @@ Use these names in Heimdall queries:
 
 Do not test what the package does, such as spans, log export and heartbeats. The package has its own tests.
 
-Test the app's own telemetry code: each `HasTelemetryAttributes` implementation, each `AiSpanStarted` listener and the `OpenTelemetry::user()` resolver.
+Test the app's own telemetry code: each `HasTelemetryAttributes` implementation, each `AiSpanStarted` listener and the `Telemetry::user()` resolver, if the app sets one.
 
 - A listener: give it a span from an SDK `TracerProvider` with a `SimpleSpanProcessor` and an `InMemoryExporter`, then assert the exported attributes. `OTEL_SDK_DISABLED` does not affect a provider that the test builds itself.
 - The user resolver: assert `resolve(ContextResolver::class)->userAttributes($user)`.

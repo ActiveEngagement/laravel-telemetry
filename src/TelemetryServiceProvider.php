@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Context;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 use Inertia\Inertia;
+use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\ConsoleInstrumentation as KeepsuitConsoleInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\HttpClientInstrumentation as KeepsuitHttpClientInstrumentation;
 use Keepsuit\LaravelOpenTelemetry\Instrumentation\HttpServerInstrumentation as KeepsuitHttpServerInstrumentation;
@@ -68,6 +69,7 @@ class TelemetryServiceProvider extends ServiceProvider
 
         Telemetry::startRecording();
 
+        $this->registerUserResolver();
         $this->registerUserContext();
         $this->registerSpanCleanup($events);
         $this->registerInertiaUser($config);
@@ -94,6 +96,11 @@ class TelemetryServiceProvider extends ServiceProvider
         $events->listen([JobProcessed::class, JobExceptionOccurred::class, JobFailed::class], $abandonOpenSpans);
 
         $this->app->terminating($abandonOpenSpans);
+    }
+
+    protected function registerUserResolver(): void
+    {
+        OpenTelemetry::user(Telemetry::collectUserAttributes(...));
     }
 
     protected function registerUserContext(): void

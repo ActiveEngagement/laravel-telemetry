@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Auth\GenericUser;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use OpenTelemetry\API\Trace\SpanKind;
@@ -50,6 +51,20 @@ it('records an exception in an HTTP request on the server span', function (): vo
     expect($span?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
         ->and(recordedExceptions($span))->toContain('The payment failed.')
         ->and(logWithBody('The payment failed.')?->getSpanContext()->getTraceId())->toBe($span?->getTraceId());
+});
+
+it('adds the id, name and email of the logged-in user to the server span', function (): void {
+    Route::get('/account', fn (): string => 'Account');
+
+    $this->actingAs(new GenericUser(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']))
+        ->get('/account')
+        ->assertOk();
+
+    $attributes = spanOfKind(SpanKind::KIND_SERVER)?->getAttributes();
+
+    expect($attributes?->get('user.id'))->toBe(42)
+        ->and($attributes?->get('user.name'))->toBe('Ada Lovelace')
+        ->and($attributes?->get('user.email'))->toBe('ada@example.com');
 });
 
 it('links a log written during a request to the server span', function (): void {

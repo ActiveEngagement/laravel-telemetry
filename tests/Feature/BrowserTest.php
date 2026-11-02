@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Exceptions;
 use Inertia\Inertia;
-use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
 use OpenTelemetry\API\Trace\TracerInterface;
 
 /**
@@ -56,7 +56,7 @@ it('reports a missing setting and renders the disabled config', function (): voi
 
 it('escapes a closing script tag in a value', function (): void {
     configureBrowser();
-    OpenTelemetry::user(fn (Authenticatable $user): array => [
+    Telemetry::user(fn (Authenticatable $user): array => [
         'user.id' => $user->getAuthIdentifier(),
         'user.name' => '</script><script>alert(1)</script>',
     ]);
@@ -91,7 +91,22 @@ it('renders no trace parent outside a trace', function (): void {
     expect($html)->not->toContain('traceparent');
 });
 
-it('shares the logged-in user with Inertia pages', function (): void {
+it('renders the id, name and email of the logged-in user', function (): void {
+    configureBrowser();
+    $this->actingAs(new GenericUser(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']));
+
+    expect(renderedBrowserConfig()['user'])->toBe(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']);
+});
+
+it('shares the id, name and email of the logged-in user with Inertia pages', function (): void {
+    $this->actingAs(new GenericUser(['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']));
+
+    $shared = value(Inertia::getShared('telemetry'));
+
+    expect($shared)->toBe(['user' => ['id' => 42, 'name' => 'Ada Lovelace', 'email' => 'ada@example.com']]);
+});
+
+it('shares a user without a name or email with Inertia pages', function (): void {
     $this->actingAs(new GenericUser(['id' => 42]));
 
     $shared = value(Inertia::getShared('telemetry'));
@@ -101,7 +116,7 @@ it('shares the logged-in user with Inertia pages', function (): void {
 
 it('reports a user resolver failure and shares no user with Inertia pages', function (): void {
     Exceptions::fake();
-    OpenTelemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    Telemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
     $this->actingAs(new GenericUser(['id' => 42]));
 
     $shared = value(Inertia::getShared('telemetry'));
