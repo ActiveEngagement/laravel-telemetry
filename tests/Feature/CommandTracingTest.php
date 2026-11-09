@@ -69,7 +69,7 @@ it('does not trace long-running and heartbeat commands', function (string $comma
 })->with(['horizon:work', 'octane:start', 'pulse:work', 'telemetry:heartbeat']);
 
 it('links an exception in a command to its span', function (): void {
-    Artisan::command('reports:send', fn () => throw new RuntimeException('The mail server is down.'));
+    Artisan::command('reports:send', fn (): never => throw new RuntimeException('The mail server is down.'));
 
     try {
         $this->app->make(Kernel::class)->handle(new ArrayInput(['command' => 'reports:send']), new BufferedOutput);

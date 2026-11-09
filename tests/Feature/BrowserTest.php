@@ -116,7 +116,7 @@ it('shares a user without a name or email with Inertia pages', function (): void
 
 it('reports a user resolver failure and shares no user with Inertia pages', function (): void {
     Exceptions::fake();
-    Telemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    Telemetry::user(fn (): never => throw new RuntimeException('Resolver is broken'));
     $this->actingAs(new GenericUser(['id' => 42]));
 
     $shared = value(Inertia::getShared('telemetry'));

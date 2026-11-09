@@ -41,7 +41,7 @@ it('returns the value of the withoutRecording callback', function (): void {
 
 it('restores recording when the withoutRecording callback throws', function (): void {
     try {
-        Telemetry::withoutRecording(fn () => throw new RuntimeException('failed'));
+        Telemetry::withoutRecording(fn (): never => throw new RuntimeException('failed'));
     } catch (RuntimeException) {
     }
 

@@ -180,7 +180,7 @@ it('reports a level that is not a PSR-3 level and sends no logs', function (): v
 });
 
 it('keeps the default channel when the tap fails', function (): void {
-    app()->bind(OpenTelemetryHandler::class, fn () => throw new RuntimeException('Handler is broken'));
+    app()->bind(OpenTelemetryHandler::class, fn (): never => throw new RuntimeException('Handler is broken'));
 
     rewatch();
     $handlers = Log::driver()->getLogger()->getHandlers();
@@ -206,7 +206,7 @@ it('does not record logs written while recording', function (): void {
 });
 
 it('never breaks the app when recording fails', function (): void {
-    watchLogsWith(new FakeLogger(fn () => throw new RuntimeException('Exporter is down')));
+    watchLogsWith(new FakeLogger(fn (): never => throw new RuntimeException('Exporter is down')));
 
     expect(fn () => Log::error('hello'))->not->toThrow(Exception::class);
 });
