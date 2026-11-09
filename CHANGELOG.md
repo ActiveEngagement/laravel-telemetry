@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `telemetry.excluded_commands` lists the commands that get no span. It defaults to `ConsoleInstrumentation::EXCLUDED`, so an app can exclude a long-running command with `[...ConsoleInstrumentation::EXCLUDED, 'app:listen']` in `config/telemetry.php`. Before, the app had to copy keepsuit's whole `instrumentation` array into `config/opentelemetry.php`. Patterns in the `'excluded'` option of `ConsoleInstrumentation` in `config/opentelemetry.php` still apply.
+
 ### Changed
 
 - The package is tested with `open-telemetry/api` 1.11, `open-telemetry/sdk` 1.16 and Rector 2.8.4. The `traceparent` meta tag that `@telemetry` renders can now end in `-03` instead of `-01`, because sdk 1.16 also sets the W3C random flag. Browsers read both values as sampled.

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
 use ActiveEngagement\Telemetry\Watchers\AiWatcher;
 use ActiveEngagement\Telemetry\Watchers\HeartbeatWatcher;
 use ActiveEngagement\Telemetry\Watchers\LogWatcher;
@@ -29,6 +30,8 @@ return [
     'excluded_paths' => [
         '/up',
     ],
+
+    'excluded_commands' => ConsoleInstrumentation::EXCLUDED,
 
     'browser' => [
         'enabled' => env('TELEMETRY_BROWSER_ENABLED', true),

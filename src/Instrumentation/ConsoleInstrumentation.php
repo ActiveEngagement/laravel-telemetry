@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ActiveEngagement\Telemetry\Instrumentation;
 
+use Illuminate\Config\Repository;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Str;
@@ -49,7 +50,7 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
      */
     protected array $failedCommands = [];
 
-    public function __construct(protected Application $app) {}
+    public function __construct(protected Application $app, protected Repository $config) {}
 
     /**
      * @param  array{commands?: string[], excluded?: string[]}  $options
@@ -57,7 +58,7 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
     #[Override]
     public function register(array $options): void
     {
-        $this->excluded = [...static::EXCLUDED, ...array_values($options['excluded'] ?? [])];
+        $this->excluded = $this->excludedCommands($options);
 
         parent::register($options);
 
@@ -90,6 +91,20 @@ class ConsoleInstrumentation extends KeepsuitConsoleInstrumentation
         }
 
         $this->failedCommands = [];
+    }
+
+    /**
+     * @param  array{excluded?: string[]}  $options
+     * @return list<string>
+     */
+    protected function excludedCommands(array $options): array
+    {
+        $patterns = [
+            ...array_values($this->config->array('telemetry.excluded_commands')),
+            ...array_values($options['excluded'] ?? []),
+        ];
+
+        return array_values(array_filter($patterns, is_string(...)));
     }
 
     #[Override]

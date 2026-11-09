@@ -56,7 +56,7 @@ Other hooks:
 - **User attributes:** `user.id`, `user.name` and `user.email` by default. To change them, call `Telemetry::user(fn (User $user) => ['user.id' => $user->id, 'user.email' => $user->email])` in a service provider. Do not use keepsuit's `OpenTelemetry::user()`.
 - **Log attributes:** `Context::add('order_id', $order->id)`.
 - **Another log channel:** add `ActiveEngagement\Telemetry\Logging\SendToOpenTelemetry::class.':info'` to its `tap`. Only for channels that are not in `LOG_STACK`, or each log is sent two times.
-- **Exclude a command:** add a pattern to `'excluded'` in the `ConsoleInstrumentation` options of `config/opentelemetry.php`.
+- **Exclude a command:** set `'excluded_commands' => [...ConsoleInstrumentation::EXCLUDED, 'app:listen']` in `config/telemetry.php`, with `ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation` (not keepsuit's). Exclude each command that runs until it is stopped, or it gets one span for its whole life.
 - **Exclude a request path:** add it to `excluded_paths` in `config/telemetry.php`. `/up` is excluded by default.
 - **Pause:** `Telemetry::withoutRecording(fn () => ...)` stops the package's AI spans, logs and heartbeats.
 
