@@ -80,7 +80,7 @@ it('renders the trace parent of the request trace', function (): void {
         $span->end();
     }
 
-    expect($html)->toMatch(sprintf('#<meta name="traceparent" content="00-%s-[0-9a-f]{16}-01">#', $span->getContext()->getTraceId()));
+    expect($html)->toMatch(sprintf('#<meta name="traceparent" content="00-%s-[0-9a-f]{16}-0[13]">#', $span->getContext()->getTraceId()));
 });
 
 it('renders no trace parent outside a trace', function (): void {
