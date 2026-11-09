@@ -85,14 +85,15 @@ Requests to `/up`, Laravel's health route, get no trace, because uptime probes c
 
 ## Commands
 
-Every command gets a span, except workers, the scheduler and `telemetry:*` (see `ConsoleInstrumentation::EXCLUDED`). To exclude more, add patterns in `config/opentelemetry.php`:
+Every command gets a span, except workers, the scheduler and `telemetry:*`. The list is `telemetry.excluded_commands`, which defaults to `ConsoleInstrumentation::EXCLUDED`. A command that runs until it is stopped gets one span for its whole life, and every query and Redis call in its loop joins that one trace. Exclude it. Publish `config/telemetry.php` and add patterns to the defaults:
 
 ```php
-Instrumentation\ConsoleInstrumentation::class => [
-    'enabled' => filter_var(env('OTEL_INSTRUMENTATION_CONSOLE', true), FILTER_VALIDATE_BOOLEAN),
-    'excluded' => ['app:listen-*'],
-],
+use ActiveEngagement\Telemetry\Instrumentation\ConsoleInstrumentation;
+
+'excluded_commands' => [...ConsoleInstrumentation::EXCLUDED, 'app:listen-*'],
 ```
+
+A pattern can have a `*` wildcard. Patterns in the `'excluded'` option of `ConsoleInstrumentation` in `config/opentelemetry.php` are also excluded.
 
 ## Users
 
