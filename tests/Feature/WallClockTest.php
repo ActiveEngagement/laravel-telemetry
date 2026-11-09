@@ -14,6 +14,11 @@ function wallClockNanos(): int
     return (int) (new DateTimeImmutable)->format('Uu') * 1000;
 }
 
+function systemClockSharesReferenceTime(): bool
+{
+    return new ReflectionProperty(SystemClock::class, 'referenceTime')->isStatic();
+}
+
 function shiftSystemClockReference(int $nanos): int
 {
     SystemClock::create();
@@ -61,4 +66,7 @@ it('timestamps logs with the wall clock after the process was frozen', function 
 
     expect(exportedLogs()[0]->getTimestamp())->toBeGreaterThanOrEqual($before)
         ->and(exportedLogs()[0]->getTimestamp())->toBeLessThanOrEqual($after);
-});
+})->skip(
+    fn (): bool => ! systemClockSharesReferenceTime(),
+    'open-telemetry/api 1.11 gives each SystemClock its own reference time',
+);
