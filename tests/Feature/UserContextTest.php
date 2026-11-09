@@ -100,7 +100,7 @@ it('keeps the original user when a queued job dispatches another job', function 
 });
 
 it('keeps dispatching jobs when the user resolver fails', function (): void {
-    Telemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    Telemetry::user(fn (): never => throw new RuntimeException('Resolver is broken'));
     $this->actingAs(new GenericUser(['id' => 42]));
 
     expect(Context::dehydrate())->toBeNull();

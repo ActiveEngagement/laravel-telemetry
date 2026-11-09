@@ -21,7 +21,7 @@ function strayStatus(): ?string
 }
 
 it('never breaks a prompt when an AiSpanStarted listener throws', function (): void {
-    Event::listen(fn (AiSpanStarted $event) => throw new RuntimeException('The listener is broken.'));
+    Event::listen(fn (AiSpanStarted $event): never => throw new RuntimeException('The listener is broken.'));
     SupportAgent::fake(['Hello']);
 
     expect(new SupportAgent()->prompt('Hi')->text)->toBe('Hello')

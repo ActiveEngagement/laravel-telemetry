@@ -71,7 +71,7 @@ it('traces a streamed agent prompt once', function (): void {
 });
 
 it('records a failed agent prompt', function (): void {
-    SupportAgent::fake(fn () => throw new RuntimeException('The provider is overloaded.'));
+    SupportAgent::fake(fn (): never => throw new RuntimeException('The provider is overloaded.'));
 
     expect(fn (): AgentResponse => new SupportAgent()->prompt('Hi'))->toThrow(RuntimeException::class);
 

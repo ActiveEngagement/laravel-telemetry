@@ -42,7 +42,7 @@ function spanNamed(string $name): ?ImmutableSpan
 }
 
 it('records an exception in an HTTP request on the server span', function (): void {
-    Route::get('/checkout', fn () => throw new RuntimeException('The payment failed.'));
+    Route::get('/checkout', fn (): never => throw new RuntimeException('The payment failed.'));
 
     $this->get('/checkout')->assertServerError();
 
@@ -105,7 +105,7 @@ it('traces a streamed response body in a child span of the request span', functi
 });
 
 it('records an exception in a streamed response body on the stream span', function (): void {
-    Route::get('/chats/{conversation}', fn () => response()->stream(fn () => throw new RuntimeException('The stream failed.')));
+    Route::get('/chats/{conversation}', fn () => response()->stream(fn (): never => throw new RuntimeException('The stream failed.')));
 
     $response = $this->get('/chats/1');
 

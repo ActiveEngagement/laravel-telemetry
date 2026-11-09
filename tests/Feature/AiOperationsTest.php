@@ -48,7 +48,7 @@ it('traces a provider operation', function (string $operation, Closure $fake, Cl
 })->with('provider operations');
 
 it('records a failed provider operation', function (string $operation, Closure $fake, Closure $call): void {
-    $fake(fn () => throw new RuntimeException('The provider is down.'));
+    $fake(fn (): never => throw new RuntimeException('The provider is down.'));
 
     expect($call)->toThrow(RuntimeException::class);
 

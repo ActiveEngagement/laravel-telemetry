@@ -111,7 +111,7 @@ it('has only the user id when the resolver returns no name or email', function (
 
 it('throws when the user resolver fails', function (): void {
     configureBrowser();
-    OpenTelemetry::user(fn () => throw new RuntimeException('Resolver is broken'));
+    OpenTelemetry::user(fn (): never => throw new RuntimeException('Resolver is broken'));
     $this->actingAs(new GenericUser(['id' => 42]));
 
     expect(fn (): ?BrowserConfig => resolvedBrowserConfig())->toThrow(RuntimeException::class, 'Resolver is broken');
