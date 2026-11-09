@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The package is tested with `open-telemetry/api` 1.11, `open-telemetry/sdk` 1.16 and Rector 2.8.4. The `traceparent` meta tag that `@telemetry` renders can now end in `-03` instead of `-01`, because sdk 1.16 also sets the W3C random flag. Browsers read both values as sampled.
+
 ## [0.2.4] - 2026-11-02
 
 ### Added
