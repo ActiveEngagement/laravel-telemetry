@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-11-09
+
 ### Added
 
 - `telemetry.excluded_commands` lists the commands that get no span. It defaults to `ConsoleInstrumentation::EXCLUDED`, so an app can exclude a long-running command with `[...ConsoleInstrumentation::EXCLUDED, 'app:listen']` in `config/telemetry.php`. Before, the app had to copy keepsuit's whole `instrumentation` array into `config/opentelemetry.php`. Patterns in the `'excluded'` option of `ConsoleInstrumentation` in `config/opentelemetry.php` still apply.
@@ -86,7 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `deployment.environment.name` and `service.version` resource attributes.
 - A Boost skill for coding agents.
 
-[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.4...HEAD
+[unreleased]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/ActiveEngagement/laravel-telemetry/compare/v0.2.1...v0.2.2
