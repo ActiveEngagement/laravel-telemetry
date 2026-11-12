@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The package is tested with laravel/ai 1.4. When a tool throws, laravel/ai 1.4 lets the agent continue, so only the `execute_tool` span has status `Error`. The `invoke_agent` span ends without an error.
+
 ## [0.2.5] - 2026-11-09
 
 ### Added
