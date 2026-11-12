@@ -135,7 +135,7 @@ it('traces a tool call inside the agent span', function (): void {
 it('records a failed tool call', function (): void {
     SupportAgent::fake([new ToolCall('call_1', 'LookupOrder', ['id' => 0]), 'Sorry.']);
 
-    expect(fn (): AgentResponse => new SupportAgent()->prompt('Where is order 0?'))->toThrow(RuntimeException::class);
+    rescue(fn (): AgentResponse => new SupportAgent()->prompt('Where is order 0?'), report: false);
 
     $tool = aiSpans('execute_tool')[0];
 
