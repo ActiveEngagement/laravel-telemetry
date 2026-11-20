@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The package is tested with keepsuit/laravel-opentelemetry 2.4. From 2.4, a span that succeeds has status `Unset` instead of `Ok`, as the OpenTelemetry semantic conventions say. Update dashboards, alerts and queries that filter on `Ok`. The [keepsuit 2.4.0 release notes](https://github.com/keepsuit/laravel-opentelemetry/releases/tag/2.4.0) list the other changes to emitted telemetry.
+- With keepsuit/laravel-opentelemetry 2.4, spans that succeed have status `Unset` instead of `Ok`.
 
 ### Fixed
 
