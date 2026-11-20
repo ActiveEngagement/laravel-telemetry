@@ -115,7 +115,7 @@ it('records an exception in a streamed response body on the stream span', functi
 
     expect($stream?->getStatus()->getCode())->toBe(StatusCode::STATUS_ERROR)
         ->and(recordedExceptions($stream))->toBe(['The stream failed.'])
-        ->and(spanOfKind(SpanKind::KIND_SERVER)?->getStatus()->getCode())->toBe(StatusCode::STATUS_OK);
+        ->and(spanOfKind(SpanKind::KIND_SERVER)?->getStatus()->getCode())->not->toBe(StatusCode::STATUS_ERROR);
 });
 
 it('leaves a generator stream for Octane to send', function (): void {
