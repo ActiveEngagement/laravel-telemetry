@@ -71,7 +71,7 @@ composer qa
 
 It fixes code style (Rector, Pint), then runs the tests, the style checks and PHPStan. The other scripts are `lint`, `test`, `test:unit`, `test:lint` and `test:types`.
 
-CI runs `composer test:unit` on PHP 8.4, 8.5 and 8.6 with Laravel 12 and 13, and `composer test:types` and `composer test:lint` on PHP 8.4. PHP 8.6 jobs are allowed to fail.
+CI runs `composer test:unit` on PHP 8.4 and 8.5 with Laravel 12 and 13, and on PHP 8.6 with Laravel 13. It runs `composer test:types` and `composer test:lint` on PHP 8.4.
 
 ## Committing
 
