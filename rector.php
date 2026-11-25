@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-use Rector\CodingStyle\Rector\Use_\SeparateMultiUseImportsRector;
 use Rector\Config\RectorConfig;
-use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
-use Rector\TypeDeclaration\Rector\StmtsAwareInterface\DeclareStrictTypesRector;
 use RectorLaravel\Rector\Class_\DescriptionPropertyToDescriptionAttributeRector;
 use RectorLaravel\Rector\Class_\SignaturePropertyToSignatureAttributeRector;
 use RectorLaravel\Set\LaravelSetList;
@@ -32,13 +29,7 @@ return RectorConfig::configure()
         codeQuality: true,
         codingStyle: true,
         typeDeclarations: true,
-        earlyReturn: true,
     )
     ->withPhpSets(php84: true)
     ->withComposerBased(laravel: true)
-    ->withImportNames(removeUnusedImports: true)
-    ->withRules([
-        DeclareStrictTypesRector::class,
-        AddOverrideAttributeToOverriddenMethodsRector::class,
-        SeparateMultiUseImportsRector::class,
-    ]);
+    ->withImportNames(removeUnusedImports: true);

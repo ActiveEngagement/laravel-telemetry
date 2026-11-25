@@ -78,6 +78,7 @@ it('throws when a setting is unset, blank or the wrong type', function (array $s
     'unset URL' => [['telemetry.browser.url' => null], 'Configuration value for key [telemetry.browser.url] must be a string, NULL given.'],
     'blank URL' => [['telemetry.browser.url' => ''], 'Browser telemetry has no URL.'],
     'unset API key' => [['telemetry.browser.api_key' => null, 'opentelemetry.exporters.otlp.traces_headers' => 'x-team=ops'], 'Browser telemetry has no API key.'],
+    'authorization header without a value' => [['telemetry.browser.api_key' => null, 'opentelemetry.exporters.otlp.traces_headers' => 'authorization'], 'Browser telemetry has no API key.'],
     'blank service name' => [['opentelemetry.service_name' => ''], 'Browser telemetry has no service name.'],
     'unset environment' => [['opentelemetry.resource_attributes' => []], 'Array value for key [deployment.environment.name] must be a string, NULL found.'],
     'blank environment' => [['opentelemetry.resource_attributes' => ['deployment.environment.name' => '']], 'Browser telemetry has no environment.'],

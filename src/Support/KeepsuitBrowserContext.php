@@ -11,6 +11,7 @@ use ActiveEngagement\Telemetry\Exceptions\MissingBrowserSetting;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Arr;
 use Keepsuit\LaravelOpenTelemetry\Facades\Tracer;
+use Override;
 
 class KeepsuitBrowserContext implements BrowserContext
 {
@@ -19,6 +20,7 @@ class KeepsuitBrowserContext implements BrowserContext
         protected ContextResolver $context,
     ) {}
 
+    #[Override]
     public function config(): ?BrowserConfig
     {
         if (! $this->config->boolean('telemetry.enabled') || ! $this->config->boolean('telemetry.browser.enabled')) {
@@ -41,6 +43,7 @@ class KeepsuitBrowserContext implements BrowserContext
         );
     }
 
+    #[Override]
     public function user(): ?array
     {
         $attributes = $this->context->userAttributes();
@@ -59,6 +62,7 @@ class KeepsuitBrowserContext implements BrowserContext
         ];
     }
 
+    #[Override]
     public function traceparent(): ?string
     {
         $traceparent = Tracer::propagationHeaders()['traceparent'] ?? null;
@@ -78,7 +82,9 @@ class KeepsuitBrowserContext implements BrowserContext
     protected function otlpIngestionKey(): ?string
     {
         foreach (explode(',', $this->config->string('opentelemetry.exporters.otlp.traces_headers')) as $header) {
-            [$name, $value] = array_pad(explode('=', $header, 2), 2, '');
+            $parts = explode('=', $header, 2);
+            $name = $parts[0];
+            $value = $parts[1] ?? '';
 
             if (mb_strtolower(mb_trim($name)) === 'authorization' && mb_trim($value) !== '') {
                 return urldecode(mb_trim($value));

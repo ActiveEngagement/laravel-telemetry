@@ -6,6 +6,7 @@ namespace ActiveEngagement\Telemetry\Browser;
 
 use Illuminate\Contracts\Support\Arrayable;
 use JsonSerializable;
+use Override;
 
 /**
  * @implements Arrayable<string, mixed>
@@ -41,6 +42,7 @@ class BrowserConfig implements Arrayable, JsonSerializable
     /**
      * @return array{v: int, enabled: true, url: string, apiKey: string, service: string, environment: string, version: string|null, user: array{id: int|string, name: string|null, email: string|null}|null, replay: array{enabled: bool, maskAllInputs: bool, blockSelector: string|null}, consoleCapture: bool}
      */
+    #[Override]
     public function toArray(): array
     {
         return [
@@ -64,6 +66,7 @@ class BrowserConfig implements Arrayable, JsonSerializable
     /**
      * @return array<string, mixed>
      */
+    #[Override]
     public function jsonSerialize(): array
     {
         return $this->toArray();

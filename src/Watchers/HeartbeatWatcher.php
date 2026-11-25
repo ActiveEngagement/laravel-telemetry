@@ -11,6 +11,7 @@ use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Foundation\Application;
 use InvalidArgumentException;
+use Override;
 
 class HeartbeatWatcher extends Watcher
 {
@@ -31,6 +32,7 @@ class HeartbeatWatcher extends Watcher
         $this->queueMonitor = $this->resolveQueueMonitor($options['queue'] ?? 'none');
     }
 
+    #[Override]
     public function register(Application $app): void
     {
         $app->afterResolving(Schedule::class, $this->schedule(...));
