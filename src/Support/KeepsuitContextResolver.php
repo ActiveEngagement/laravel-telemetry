@@ -11,6 +11,7 @@ use Illuminate\Log\Context\Repository as ContextRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Context;
 use Keepsuit\LaravelOpenTelemetry\Facades\OpenTelemetry;
+use Override;
 
 class KeepsuitContextResolver implements ContextResolver
 {
@@ -18,11 +19,13 @@ class KeepsuitContextResolver implements ContextResolver
 
     public function __construct(protected Repository $config) {}
 
+    #[Override]
     public function resolve(array $context): array
     {
         return [...$this->withoutTraceId($context), ...$this->userAttributes()];
     }
 
+    #[Override]
     public function userAttributes(?Authenticatable $user = null): array
     {
         if ($this->config->get('opentelemetry.user_context') !== true) {
@@ -36,6 +39,7 @@ class KeepsuitContextResolver implements ContextResolver
             : $this->carriedUserAttributes();
     }
 
+    #[Override]
     public function dehydrating(ContextRepository $context): void
     {
         if ($context->hasHidden(static::USER_CONTEXT_KEY)) {

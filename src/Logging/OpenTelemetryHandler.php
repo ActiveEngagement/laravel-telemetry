@@ -11,6 +11,7 @@ use Monolog\Level;
 use Monolog\LogRecord;
 use OpenTelemetry\API\Logs\LoggerInterface;
 use OpenTelemetry\API\Logs\Severity;
+use Override;
 use Throwable;
 
 class OpenTelemetryHandler extends AbstractHandler
@@ -23,6 +24,7 @@ class OpenTelemetryHandler extends AbstractHandler
         parent::__construct($level);
     }
 
+    #[Override]
     public function handle(LogRecord $record): bool
     {
         if ($this->isHandling($record) && Telemetry::isRecording()) {

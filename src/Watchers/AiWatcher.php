@@ -17,6 +17,7 @@ use ActiveEngagement\Telemetry\Listeners\TranscriptionEventSubscriber;
 use ActiveEngagement\Telemetry\Telemetry;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
+use Override;
 
 class AiWatcher extends Watcher
 {
@@ -36,6 +37,7 @@ class AiWatcher extends Watcher
         TranscriptionEventSubscriber::class,
     ];
 
+    #[Override]
     public function register(Application $app): void
     {
         if (! Telemetry::isAiInstalled()) {

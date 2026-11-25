@@ -44,7 +44,7 @@
 - Use constructor property promotion. Do not leave an empty zero-parameter `__construct()`.
 - Declare all parameter and return types. Use array shapes in PHPDoc.
 - Comments are at most two lines. Use PHPDoc only for types and exceptions (`@param`, `@return`, `@var`, `@throws`). No other annotations.
-- Overriding methods get `#[Override]`. Rector adds it.
+- Overriding methods get `#[Override]`. PHPStan reports a missing one.
 
 ## Testing
 

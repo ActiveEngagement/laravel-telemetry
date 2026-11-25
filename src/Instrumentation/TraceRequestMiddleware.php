@@ -56,6 +56,8 @@ class TraceRequestMiddleware extends KeepsuitTraceRequestMiddleware
     }
 
     /**
+     * @param  Closure(): mixed  $body
+     *
      * @throws Throwable
      */
     protected function stream(SpanBuilderInterface $streamSpan, Closure $body): void
@@ -75,6 +77,9 @@ class TraceRequestMiddleware extends KeepsuitTraceRequestMiddleware
         }
     }
 
+    /**
+     * @param  Closure(): mixed  $body
+     */
     protected function isSentByOctane(Closure $body): bool
     {
         return new ReflectionFunction($body)->isGenerator();

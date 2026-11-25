@@ -10,6 +10,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Log\LogManager;
 use InvalidArgumentException;
 use Monolog\Level;
+use Override;
 
 class LogWatcher extends Watcher
 {
@@ -25,6 +26,7 @@ class LogWatcher extends Watcher
         $this->level = $this->level($options['level'] ?? 'debug');
     }
 
+    #[Override]
     public function register(Application $app): void
     {
         $config = $app->make(Repository::class);

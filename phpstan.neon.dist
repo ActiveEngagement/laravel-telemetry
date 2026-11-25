@@ -10,3 +10,13 @@ parameters:
     - config
 
   level: max
+
+  checkBenevolentUnionTypes: true
+  checkDynamicProperties: true
+  checkMissingCallableSignature: true
+  checkMissingOverrideMethodAttribute: true
+  checkTooWideReturnTypesInProtectedAndPublicMethods: true
+  checkUninitializedProperties: true
+  reportAnyTypeWideningInVarTag: true
+  reportPossiblyNonexistentConstantArrayOffset: true
+  reportPossiblyNonexistentGeneralArrayOffset: true
